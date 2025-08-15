@@ -7,5 +7,9 @@
     "allow": [
       "mcp__sequential-thinking__sequentialthinking"
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "./.claude/statusline.sh"
   }
 }
