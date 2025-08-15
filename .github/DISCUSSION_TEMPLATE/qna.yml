@@ -1,0 +1,19 @@
+title: "Q&A"
+body:
+  - type: markdown
+    attributes:
+      value: "## 🤔 질문해주세요!"
+  - type: textarea
+    id: question
+    attributes:
+      label: "❓ 질문"
+      description: "궁금한 점을 구체적으로 작성해 주세요."
+      placeholder: "예시: React에서 상태 관리를 효율적으로 하는 방법은 무엇인가요?"
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: "ℹ️ 추가 정보"
+      description: "어떤 환경에서 어떤 상황에 놓였는지 등 질문의 배경을 설명해 주세요."
+      placeholder: "예시: Next.js 프로젝트에서 SWR을 사용 중인데..."

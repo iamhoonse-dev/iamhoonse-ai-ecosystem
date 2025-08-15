@@ -1,0 +1,9 @@
+title: "일반"
+body:
+  - type: textarea
+    id: discussion_body
+    attributes:
+      label: "📝 자유롭게 이야기해 주세요."
+      description: "프로젝트와 관련된 어떤 주제든 좋습니다!"
+    validations:
+      required: true

@@ -1,0 +1,21 @@
+title: "성과 공유"
+body:
+  - type: textarea
+    id: project_title
+    attributes:
+      label: "🏆 공유하고 싶은 성과는 무엇인가요?"
+      description: "만든 프로젝트, 기능, 또는 실험을 한 문장으로 요약해 주세요."
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: "📝 상세 설명"
+      description: "어떤 기술 스택을 사용했는지, 어떤 어려움이 있었는지 등을 자유롭게 작성해 주세요."
+    validations:
+      required: true
+  - type: textarea
+    id: link
+    attributes:
+      label: "🔗 링크 및 스크린샷 (optional)"
+      description: "데모 링크, GitHub 저장소, 또는 스크린샷을 공유해 주세요."
