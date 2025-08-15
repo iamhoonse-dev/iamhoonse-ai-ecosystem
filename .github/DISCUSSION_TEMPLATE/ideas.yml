@@ -1,0 +1,28 @@
+title: "아이디어"
+body:
+  - type: textarea
+    id: idea_title
+    attributes:
+      label: "💡 아이디어 제목"
+      description: "아이디어를 한 문장으로 요약해 주세요."
+    validations:
+      required: true
+  - type: textarea
+    id: what_is_it
+    attributes:
+      label: "✨ 어떤 아이디어인가요?"
+      description: "제안하는 아이디어를 상세하게 설명해 주세요."
+    validations:
+      required: true
+  - type: textarea
+    id: why_is_it_needed
+    attributes:
+      label: "📜 왜 필요한가요?"
+      description: "이 아이디어가 왜 필요한지, 어떤 문제를 해결할 수 있는지 설명해 주세요."
+    validations:
+      required: true
+  - type: textarea
+    id: how_to_do_it
+    attributes:
+      label: "🚀 어떻게 구현할까요? (optional)"
+      description: "가능하다면 구현 방법에 대한 아이디어를 공유해 주세요."

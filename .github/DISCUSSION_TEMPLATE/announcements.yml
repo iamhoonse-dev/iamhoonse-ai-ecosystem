@@ -1,0 +1,21 @@
+title: "공지 사항"
+body:
+  - type: textarea
+    id: announcement_title
+    attributes:
+      label: "📣 공지 제목"
+      description: "공지의 주요 내용을 한 문장으로 요약해 주세요."
+    validations:
+      required: true
+  - type: textarea
+    id: announcement_body
+    attributes:
+      label: "📝 상세 내용"
+      description: "공지할 내용을 상세하게 작성해 주세요. Markdown 문법을 사용하여 가독성을 높일 수 있습니다."
+    validations:
+      required: true
+  - type: textarea
+    id: additional_info
+    attributes:
+      label: "🔗 관련 링크 (optional)"
+      description: "관련 문서, PR, 이슈 또는 외부 링크가 있다면 첨부해 주세요."
