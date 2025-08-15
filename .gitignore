@@ -40,3 +40,6 @@ yarn-error.log*
 
 # Jetbrains
 .idea
+
+# Claude Code
+.claude/bash-command.log
