@@ -46,7 +46,7 @@
 
 프로젝트 개발을 위해 다음이 필요합니다:
 
-- **Node.js**: 18.0.0 이상 (LTS 권장)
+- **Node.js**: 22.0.0 이상 (LTS 권장)
 - **pnpm**: 9.0.0 (정확한 버전 필수)
 - **Git**: 최신 버전
 - **Claude Code CLI**: AI 기반 개발을 위해 권장
@@ -67,9 +67,18 @@ git checkout main
 git merge upstream/main
 ```
 
-### 2. 패키지 설치
+### 2. Node.js 버전 설정 및 패키지 설치
 
 ```bash
+# Node.js 버전 확인 (22.0.0 이상이어야 함)
+node --version
+
+# nvm 사용 시 올바른 버전 자동 설정
+nvm use
+
+# nvm이 없다면 수동으로 Node.js 22+ 설치
+# https://nodejs.org/에서 최신 LTS 버전 다운로드
+
 # pnpm 버전 확인 (9.0.0이어야 함)
 pnpm --version
 
@@ -78,6 +87,22 @@ npm install -g pnpm@9.0.0
 
 # 의존성 설치
 pnpm install
+```
+
+**💡 Node.js 버전 관리 모범 사례**
+
+프로젝트는 `.nvmrc` 파일을 통해 Node.js 버전을 명시합니다:
+
+```bash
+# .nvmrc 내용 확인
+cat .nvmrc  # 출력: 22
+
+# nvm 설치된 경우 권장 사용법
+nvm use     # .nvmrc에 명시된 버전 자동 사용
+nvm install # 필요시 해당 버전 자동 설치
+
+# 현재 Node.js 버전 확인
+node --version  # v22.x.x 형태로 출력되어야 함
 ```
 
 ### 3. 개발 서버 실행
@@ -174,28 +199,32 @@ git checkout -b chore/작업-내용
 git checkout main
 git pull upstream main
 
-# 2. 새 브랜치 생성
+# 2. Node.js 버전 확인 (.nvmrc 기준)
+nvm use  # nvm 사용 시
+node --version  # v22.x.x 확인
+
+# 3. 새 브랜치 생성
 git checkout -b feat/my-awesome-feature
 
-# 3. 개발 및 테스트
+# 4. 개발 및 테스트
 # 코드 작성...
 
-# 4. 코드 품질 검사 (선택사항 - 커밋 시 자동 실행됨)
+# 5. 코드 품질 검사 (선택사항 - 커밋 시 자동 실행됨)
 pnpm lint:check      # ESLint 검사
 pnpm check-types     # TypeScript 타입 검사
 pnpm format:check    # Prettier 포맷팅 검사
 
-# 5. 자동 수정 (필요시)
+# 6. 자동 수정 (필요시)
 pnpm lint:fix        # ESLint 오류 자동 수정
 pnpm format:fix      # 포맷팅 자동 수정
 
-# 6. 빌드 테스트
+# 7. 빌드 테스트
 pnpm build
 
-# 7. 커밋 메시지 생성 (선택사항: AI 자동 생성)
+# 8. 커밋 메시지 생성 (선택사항: AI 자동 생성)
 /write-commit-message  # AI로 커밋 메시지 생성
 
-# 8. 변경사항 커밋 (자동 품질 검사 실행됨)
+# 9. 변경사항 커밋 (자동 품질 검사 실행됨)
 git add .
 git commit -m "feat: 새로운 기능 추가"  # 커밋 메시지 규약 자동 검증
 
@@ -203,7 +232,7 @@ git commit -m "feat: 새로운 기능 추가"  # 커밋 메시지 규약 자동 
 # - Pre-commit: lint:check, format:check, check-types
 # - Commit-msg: 커밋 메시지 Conventional Commits 규약 검사
 
-# 9. 브랜치 푸시
+# 10. 브랜치 푸시
 git push origin feat/my-awesome-feature
 ```
 
@@ -219,6 +248,58 @@ git push origin feat/my-awesome-feature
 | `pnpm build`        | 빌드 테스트 | 전체 프로젝트 빌드 검증         |
 
 **⚡ 자동 실행**: 위 명령어들 중 일부는 Git Hook Scripts에 의해 커밋 시 자동으로 실행됩니다.
+
+### 4. Node.js 버전 호환성
+
+프로젝트는 Node.js 22+ 버전을 요구합니다:
+
+#### 버전 확인 방법
+
+```bash
+# 현재 Node.js 버전 확인
+node --version
+
+# package.json의 engines 필드 확인
+cat package.json | grep -A2 "engines"
+
+# .nvmrc 파일 내용 확인
+cat .nvmrc
+```
+
+#### 문제 해결
+
+```bash
+# Node.js 버전이 22 미만인 경우
+# 1. nvm 사용 시
+nvm install 22
+nvm use 22
+
+# 2. 직접 설치 시
+# https://nodejs.org/에서 최신 버전 다운로드
+
+# 3. 패키지 매니저 사용 (macOS)
+brew install node@22
+
+# 4. 패키지 매니저 사용 (Ubuntu/Debian)
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt-get install -y nodejs
+```
+
+#### CI/CD 환경에서의 버전 관리
+
+```yaml
+# GitHub Actions 예시
+- name: Setup Node.js
+  uses: actions/setup-node@v4
+  with:
+    node-version-file: ".nvmrc" # .nvmrc 파일 기준으로 버전 설정
+
+# 또는 명시적 버전 지정
+- name: Setup Node.js
+  uses: actions/setup-node@v4
+  with:
+    node-version: "22"
+```
 
 ## 코딩 스타일 가이드라인
 

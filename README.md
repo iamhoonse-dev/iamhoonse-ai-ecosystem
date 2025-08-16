@@ -52,7 +52,7 @@ iamhoonse-ai-ecosystem/
 
 ### 필수 요구사항
 
-- Node.js 18 이상
+- Node.js 22 이상
 - pnpm 9.0.0
 - Claude Code CLI (선택사항)
 
@@ -63,9 +63,20 @@ iamhoonse-ai-ecosystem/
 git clone https://github.com/iamhoonse-dev/iamhoonse-ai-ecosystem.git
 cd iamhoonse-ai-ecosystem
 
+# Node.js 버전 설정 (nvm 사용 시)
+nvm use
+
 # 의존성 설치
 pnpm install
 ```
+
+**💡 Node.js 버전 관리**
+
+프로젝트는 `.nvmrc` 파일을 통해 권장 Node.js 버전(22)을 명시합니다:
+
+- **nvm 사용 시**: `nvm use` 명령어로 자동으로 올바른 버전 사용
+- **수동 관리 시**: Node.js 22 이상 버전이 설치되어 있는지 확인
+- **CI/CD 환경**: `.nvmrc` 파일을 참조하여 일관된 런타임 환경 보장
 
 ### 개발 서버 실행
 
