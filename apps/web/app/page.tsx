@@ -2,12 +2,40 @@ import Image, { type ImageProps } from "next/image";
 import { Button } from "@repo/ui/button";
 import styles from "./page.module.css";
 
-type Props = Omit<ImageProps, "src"> & {
+/**
+ * 테마별 이미지 컴포넌트의 속성 인터페이스
+ * Next.js Image 컴포넌트의 props에서 src를 제외하고 추가 속성을 정의합니다.
+ */
+type ThemeImageProps = Omit<ImageProps, "src"> & {
+  /** 라이트 테마에서 표시할 이미지 경로 */
   srcLight: string;
+  /** 다크 테마에서 표시할 이미지 경로 */
   srcDark: string;
 };
 
-const ThemeImage = (props: Props) => {
+/**
+ * 테마에 따라 다른 이미지를 표시하는 컴포넌트
+ *
+ * 라이트/다크 테마에 따라 적절한 이미지를 자동으로 표시합니다.
+ * CSS를 통해 테마별로 하나의 이미지만 보이도록 처리됩니다.
+ *
+ * @param props - 테마별 이미지 속성들
+ * @param props.srcLight - 라이트 테마에서 표시할 이미지 경로
+ * @param props.srcDark - 다크 테마에서 표시할 이미지 경로
+ * @returns JSX 테마별 이미지 엘리먼트들
+ *
+ * @example
+ * ```tsx
+ * <ThemeImage
+ *   srcLight="/logo-light.svg"
+ *   srcDark="/logo-dark.svg"
+ *   alt="로고"
+ *   width={100}
+ *   height={50}
+ * />
+ * ```
+ */
+const ThemeImage = (props: ThemeImageProps) => {
   const { srcLight, srcDark, ...rest } = props;
 
   return (
@@ -18,6 +46,14 @@ const ThemeImage = (props: Props) => {
   );
 };
 
+/**
+ * 웹 애플리케이션의 홈 페이지 컴포넌트
+ *
+ * Turborepo 모노레포 구조를 소개하고 관련 링크를 제공하는 랜딩 페이지입니다.
+ * 테마별 로고, 시작 가이드, 외부 링크들을 포함합니다.
+ *
+ * @returns JSX 홈 페이지 엘리먼트
+ */
 export default function Home() {
   return (
     <div className={styles.page}>
