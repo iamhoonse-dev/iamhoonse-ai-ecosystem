@@ -18,6 +18,7 @@
 - [테스트 가이드라인](#테스트-가이드라인)
 - [문서화 요구사항](#문서화-요구사항)
 - [Claude Code와 함께 작업하기](#claude-code와-함께-작업하기)
+- [커밋 메시지 자동화](#커밋-메시지-자동화)
 - [패키지별 기여 가이드](#패키지별-기여-가이드)
 
 ## 기여하기 전에
@@ -191,7 +192,10 @@ pnpm format:fix      # 포맷팅 자동 수정
 # 6. 빌드 테스트
 pnpm build
 
-# 7. 변경사항 커밋 (자동 품질 검사 실행됨)
+# 7. 커밋 메시지 생성 (선택사항: AI 자동 생성)
+/write-commit-message  # AI로 커밋 메시지 생성
+
+# 8. 변경사항 커밋 (자동 품질 검사 실행됨)
 git add .
 git commit -m "feat: 새로운 기능 추가"  # 커밋 메시지 규약 자동 검증
 
@@ -199,7 +203,7 @@ git commit -m "feat: 새로운 기능 추가"  # 커밋 메시지 규약 자동 
 # - Pre-commit: lint:check, format:check, check-types
 # - Commit-msg: 커밋 메시지 Conventional Commits 규약 검사
 
-# 8. 브랜치 푸시
+# 9. 브랜치 푸시
 git push origin feat/my-awesome-feature
 ```
 
@@ -397,11 +401,33 @@ BREAKING CHANGE: API 응답에서 user_id를 userId로 변경
 
 #### 커밋 메시지 작성 팁
 
+**🤖 AI 자동 생성 방법 (추천)**
+
+```bash
+# 1. 변경사항 스테이징
+git add .
+
+# 2. AI로 커밋 메시지 생성
+/write-commit-message
+
+# 3. 생성된 메시지 확인 후 커밋
+git commit -m "생성된-커밋-메시지"
+```
+
+**✍️ 수동 작성 가이드라인**
+
 1. **제목은 50자 이내로 작성**
 2. **명령문 현재 시제 사용** ("추가한다" ✅, "추가했다" ❌)
 3. **한글로 작성** (팀 내 소통 언어)
 4. **본문은 72자마다 줄바꿈**
 5. **관련 이슈 번호 포함** (`Closes #123`, `Fixes #456`)
+
+**📌 AI 생성의 장점**
+
+- ✅ **일관성**: 항상 Conventional Commits 규약 준수
+- ✅ **정확성**: 스테이징된 파일 분석을 통한 정확한 타입 분류
+- ✅ **효율성**: 메시지 작성 시간 단축
+- ✅ **학습 효과**: 좋은 커밋 메시지 예시로 학습 가능
 
 ## 풀 리퀘스트 가이드
 
@@ -493,6 +519,23 @@ Claude Code의 `/create-pr` 명령어를 사용하면 자동으로 PR을 생성�
 # - 적절한 PR 제목 및 설명 생성
 # - 체크리스트 검증
 # - GitHub PR 생성
+```
+
+**🚀 전체 워크플로우 (커밋 메시지 자동화 포함)**
+
+```bash
+# 1. 개발 완료 후 스테이징
+git add .
+
+# 2. AI로 커밋 메시지 생성 및 커밋
+/write-commit-message
+git commit -m "생성된-메시지"
+
+# 3. 브랜치 푸시
+git push origin feat/my-feature
+
+# 4. AI로 PR 생성
+/create-pr
 ```
 
 ## 이슈 리포팅
@@ -910,6 +953,16 @@ pnpm add @repo/package-name
 @workflow-efficiency-guru CI/CD 파이프라인을 최적화해주세요
 ```
 
+#### @conventional-commit-writer
+
+Conventional Commits 규약에 따른 커밋 메시지 작성 전문가
+
+```bash
+# 사용 예시
+@conventional-commit-writer 스테이징된 파일들에 대한 커밋 메시지를 작성해주세요
+@conventional-commit-writer 이 변경사항에 맞는 적절한 커밋 메시지를 만들어주세요
+```
+
 ### 2. 슬래시 커맨드 활용
 
 #### `/update-documents`
@@ -940,6 +993,38 @@ pnpm add @repo/package-name
 # - 적절한 PR 제목 및 설명 생성
 # - 체크리스트 검증
 # - GitHub PR 생성
+```
+
+#### `/write-commit-message`
+
+Conventional Commits 규약에 따른 커밋 메시지를 자동으로 생성합니다.
+
+```bash
+# 사용 예시
+/write-commit-message
+
+# 자동으로 수행되는 작업:
+# - 스테이징된 파일들의 변경사항 분석
+# - 변경 유형 식별 (feat, fix, docs, chore 등)
+# - Conventional Commits 규약에 맞는 커밋 메시지 생성
+# - 한국어/영어 컨텍스트에 맞는 언어 선택
+```
+
+**🎆 커밋 메시지 자동화 워크플로우**
+
+```bash
+# 1. 변경사항 스테이징
+git add .
+
+# 2. AI로 커밋 메시지 생성
+/write-commit-message
+
+# 3. 생성된 메시지로 커밋 (자동 검사 포함)
+git commit -m "생성된 커밋 메시지"
+
+# 참고: 커밋 시 자동으로 실행되는 검사:
+# - Pre-commit: lint:check, format:check, check-types
+# - Commit-msg: Conventional Commits 규약 검증
 ```
 
 ### 3. AI와의 효과적인 협업 방법
@@ -979,6 +1064,209 @@ pnpm add @repo/package-name
 @performance-code-auditor 이 PR의 성능 영향을 분석해주세요
 @security-vulnerability-auditor 보안 측면에서 검토해주세요
 @architecture-guru 아키텍처 관점에서 피드백을 주세요
+```
+
+## 커밋 메시지 자동화
+
+프로젝트는 AI 기반 커밋 메시지 자동화 기능을 지원합니다. 이 기능을 사용하면 Conventional Commits 규칙에 맞는 정확하고 의미있는 커밋 메시지를 자동으로 생성할 수 있습니다.
+
+### 1. AI 커밋 메시지 작성 에이전트
+
+#### @conventional-commit-writer
+
+이 에이전트는 스테이징된 파일들을 분석하여 적절한 커밋 메시지를 생성합니다.
+
+**주요 기능:**
+
+- 📊 **변경사항 자동 분석**: staged 파일의 diff 분석
+- 🏷️ **타입 자동 분류**: feat, fix, docs, chore 등 적절한 타입 선택
+- 🌏 **다국어 지원**: 프로젝트 컨텍스트에 맞는 한국어/영어 선택
+- 📝 **규약 준수**: Conventional Commits 표준 자동 적용
+- 🔍 **상세 분석**: Breaking changes, scope, 이슈 참조 자동 감지
+
+### 2. 사용 방법
+
+#### 기본 워크플로우
+
+```bash
+# 1. 작업 완료 후 변경사항 스테이징
+git add .
+
+# 2. AI로 커밋 메시지 생성
+/write-commit-message
+
+# 3. 생성된 메시지 확인 후 커밋
+git commit -m "생성된-커밋-메시지"
+```
+
+#### 고급 사용 예시
+
+```bash
+# 특정 파일만 스테이징하여 커밋 메시지 생성
+git add src/components/Button.tsx
+/write-commit-message
+
+# 복잡한 변경사항에 대한 상세한 메시지 생성
+git add .
+@conventional-commit-writer
+이번 변경사항은 사용자 인증 시스템을 완전히 리팩토링했습니다.
+JWT 토큰 방식으로 변경하고, 기존 세션 기반 인증은 제거했습니다.
+Breaking change가 있으니 이를 반영한 커밋 메시지를 작성해주세요.
+```
+
+### 3. AI 생성 커밋 메시지 예시
+
+#### 새로운 기능 추가
+
+```bash
+# 변경사항: 새로운 Button 컴포넌트 추가
+# AI 생성 결과:
+feat(ui): Button 컴포넌트 추가
+
+다양한 variant와 size를 지원하는 재사용 가능한 Button 컴포넌트를 구현했습니다.
+
+- primary, secondary, ghost variant 지원
+- sm, md, lg 사이즈 옵션
+- 접근성 속성 포함
+- TypeScript 인터페이스 정의
+```
+
+#### 버그 수정
+
+```bash
+# 변경사항: 로그인 폼 유효성 검사 오류 수정
+# AI 생성 결과:
+fix(auth): 로그인 폼 이메일 유효성 검사 오류 수정
+
+이메일 정규식 패턴이 일부 유효한 이메일을 거부하는 문제를 해결했습니다.
+
+Fixes #123
+```
+
+#### Breaking Change
+
+```bash
+# 변경사항: API 응답 형식 변경
+# AI 생성 결과:
+feat!: API 응답 형식을 표준화
+
+BREAKING CHANGE: 모든 API 엔드포인트의 응답 형식을 통일했습니다.
+- user_id → userId로 필드명 변경
+- 에러 응답 구조 표준화
+- 기존 클라이언트 코드 업데이트 필요
+```
+
+### 4. Git Hook Scripts와의 통합
+
+프로젝트에는 자동 품질 검사를 위한 Git Hook Scripts가 설정되어 있습니다:
+
+#### Pre-commit Hook
+
+```bash
+# .husky/pre-commit
+echo "🔍 commit 이전에 lint 규칙을 적용합니다..."
+if (
+  pnpm run lint:check &&
+  pnpm run format:check &&
+  pnpm run check-types
+); then
+  echo "✅ 모든 lint 규칙이 성공적으로 적용되었습니다."
+  exit 0
+else
+  echo "❌ lint 규칙 검사에서 오류가 발생했습니다."
+  exit 1
+fi
+```
+
+#### Commit-msg Hook
+
+```bash
+# .husky/commit-msg
+COMMIT_MESSAGE=$(cat "$1")
+echo "❤️‍🩹 Commit 메세지: $COMMIT_MESSAGE"
+
+npx commitlint --edit $1
+```
+
+### 5. 효율적인 개발 워크플로우
+
+AI 커밋 메시지 자동화를 활용한 전체 개발 워크플로우:
+
+```bash
+# 1. 기능 브랜치 생성
+git checkout -b feat/user-dashboard
+
+# 2. 개발 작업 수행
+# ... 코드 작성 ...
+
+# 3. 코드 품질 검사 (선택사항 - 커밋 시 자동 실행됨)
+pnpm lint:fix
+pnpm format:fix
+
+# 4. 변경사항 스테이징
+git add .
+
+# 5. AI로 커밋 메시지 생성
+/write-commit-message
+
+# 6. 생성된 메시지로 커밋 (자동 검사 실행)
+git commit -m "feat(dashboard): 사용자 대시보드 컴포넌트 구현"
+
+# 7. 브랜치 푸시
+git push origin feat/user-dashboard
+
+# 8. AI로 PR 생성
+/create-pr
+```
+
+### 6. 트러블슈팅
+
+#### 커밋 메시지 규약 검사 실패
+
+```bash
+# 문제: commitlint 검사 실패
+❌ 커밋 메시지가 규칙에 부합하지 않습니다.
+
+# 해결: AI 재생성 요청
+/write-commit-message
+# 또는 수동으로 Conventional Commits 형식 확인
+```
+
+#### Pre-commit 검사 실패
+
+```bash
+# 문제: lint 또는 타입 검사 실패
+❌ lint 규칙 검사에서 오류가 발생했습니다.
+
+# 해결: 자동 수정 실행
+pnpm lint:fix
+pnpm format:fix
+
+# 타입 오류는 수동 수정 필요
+pnpm check-types
+```
+
+### 7. 모범 사례
+
+#### AI 커밋 메시지 활용 팁
+
+1. **작은 단위로 커밋**: AI가 변경사항을 정확히 분석할 수 있도록 논리적 단위로 커밋
+2. **의미있는 변경사항**: 여러 다른 타입의 변경을 한 번에 커밋하지 않기
+3. **검토 후 사용**: AI가 생성한 메시지를 검토하고 필요시 수정
+4. **컨텍스트 제공**: 복잡한 변경사항의 경우 추가 설명을 에이전트에게 제공
+
+#### 권장하는 커밋 패턴
+
+```bash
+# ✅ 좋은 예: 단일 기능에 대한 변경
+git add src/components/UserProfile.tsx
+/write-commit-message
+# 결과: "feat(profile): 사용자 프로필 편집 기능 추가"
+
+# ❌ 나쁜 예: 여러 기능이 섞인 변경
+git add src/components/ src/pages/ src/utils/
+/write-commit-message
+# 결과: 불명확한 커밋 메시지
 ```
 
 ## 패키지별 기여 가이드
