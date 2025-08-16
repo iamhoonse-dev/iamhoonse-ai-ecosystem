@@ -1,135 +1,169 @@
-# Turborepo starter
+# iamhoonse AI Ecosystem
 
-This Turborepo starter is maintained by the Turborepo core team.
+> AI 기반 개발 워크플로우와 도구들을 위한 모노레포 프로젝트
 
-## Using this example
+이 프로젝트는 AI 기반 개발 환경을 구축하기 위한 통합 생태계입니다. Claude Code와의 통합을 통해 자동화된 문서 업데이트, PR 생성, 코드 리뷰 등의 기능을 제공합니다.
 
-Run the following command:
+## 주요 특징
 
-```sh
-npx create-turbo@latest
-```
+- 🤖 **Claude Code 통합**: AI 기반 개발 워크플로우 자동화
+- 📝 **한국어 기술 문서**: 한국 개발자를 위한 전문 기술 문서 작성
+- ⚡ **Turborepo**: 고성능 모노레포 빌드 시스템
+- 🔧 **TypeScript**: 타입 안전한 개발 환경
+- 📦 **pnpm**: 효율적인 패키지 관리
 
-## What's inside?
-
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
+## 프로젝트 구조
 
 ```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+iamhoonse-ai-ecosystem/
+├── apps/
+│   ├── docs/          # 문서 사이트 (Next.js)
+│   └── web/           # 메인 웹 애플리케이션 (Next.js)
+├── packages/
+│   ├── ui/            # 공유 React 컴포넌트 라이브러리
+│   ├── eslint-config/ # ESLint 설정 패키지
+│   └── typescript-config/ # TypeScript 설정 패키지
+└── .claude/
+    ├── agents/        # Claude Code AI 에이전트
+    └── commands/      # Slash 커맨드 정의
 ```
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+## Claude Code 통합 기능
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+### AI 에이전트
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+프로젝트에 포함된 전문 AI 에이전트들:
 
-### Develop
+- **korean-tech-writer**: 한국어 기술 문서 작성 전문가
+- **architecture-guru**: 시스템 아키텍처 설계 전문가
+- **performance-code-auditor**: 코드 성능 최적화 전문가
+- **security-vulnerability-auditor**: 보안 취약점 분석 전문가
+- **workflow-efficiency-guru**: 개발 워크플로우 최적화 전문가
 
-To develop all apps and packages, run the following command:
+### Slash 커맨드
 
-```
-cd my-turborepo
+- `/update-documents`: 저장소 문서 자동 업데이트
+- `/create-pr`: 자동화된 풀 리퀘스트 생성
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
+## 시작하기
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
+### 필수 요구사항
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+- Node.js 18 이상
+- pnpm 9.0.0
+- Claude Code CLI (선택사항)
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+### 설치
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+```bash
+# 저장소 클론
+git clone https://github.com/iamhoonse-dev/iamhoonse-ai-ecosystem.git
+cd iamhoonse-ai-ecosystem
+
+# 의존성 설치
+pnpm install
 ```
 
-### Remote Caching
+### 개발 서버 실행
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+```bash
+# 모든 앱 개발 서버 실행
+pnpm dev
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+# 특정 앱만 실행
+pnpm turbo dev --filter=web
+pnpm turbo dev --filter=docs
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+### 빌드
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+```bash
+# 모든 패키지 빌드
+pnpm build
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+# 특정 패키지 빌드
+pnpm turbo build --filter=web
 ```
 
-## Useful Links
+## 개발 워크플로우
 
-Learn more about the power of Turborepo:
+### 코드 품질 관리
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+```bash
+# 린트 검사
+pnpm lint
+
+# 타입 체크
+pnpm check-types
+
+# 코드 포맷팅 확인
+pnpm format:check
+
+# 코드 포맷팅 적용
+pnpm format:fix
+```
+
+### Claude Code 활용
+
+1. **문서 업데이트**: `/update-documents` 명령어로 자동 문서 업데이트
+2. **PR 생성**: `/create-pr` 명령어로 자동화된 풀 리퀘스트 생성
+3. **AI 리뷰**: 코드 변경사항에 대한 AI 기반 리뷰 및 피드백
+
+## 패키지 상세
+
+### Apps
+
+#### `docs`
+
+- Next.js 기반 문서 사이트
+- 프로젝트 문서화 및 API 레퍼런스 제공
+
+#### `web`
+
+- 메인 웹 애플리케이션
+- Next.js App Router 사용
+
+### Packages
+
+#### `@repo/ui`
+
+- 공유 React 컴포넌트 라이브러리
+- TypeScript로 작성된 재사용 가능한 UI 컴포넌트
+
+#### `@repo/eslint-config`
+
+- 프로젝트 전체에서 사용하는 ESLint 설정
+- Next.js와 Prettier 설정 포함
+
+#### `@repo/typescript-config`
+
+- 공유 TypeScript 설정
+- 다양한 환경별 설정 파일 제공
+
+## 기여하기
+
+1. 이 저장소를 포크합니다
+2. 새로운 기능 브랜치를 생성합니다 (`git checkout -b feature/amazing-feature`)
+3. 변경사항을 커밋합니다 (`git commit -m 'Add some amazing feature'`)
+4. 브랜치에 푸시합니다 (`git push origin feature/amazing-feature`)
+5. 풀 리퀘스트를 생성합니다
+
+### 개발 가이드라인
+
+- 모든 코드는 TypeScript로 작성
+- ESLint와 Prettier 규칙 준수
+- 커밋 메시지는 [Conventional Commits](https://www.conventionalcommits.org/) 형식 사용
+- 새로운 기능에 대한 문서 작성 필수
+
+## 라이선스
+
+이 프로젝트는 MIT 라이선스 하에 배포됩니다.
+
+## 연락처
+
+- GitHub: [@iamhoonse-dev](https://github.com/iamhoonse-dev)
+- Email: contact@iamhoonse.com
+
+---
+
+> 이 프로젝트는 AI와 인간 개발자의 협업을 통해 더 나은 개발 경험을 만들어가는 것을 목표로 합니다.
