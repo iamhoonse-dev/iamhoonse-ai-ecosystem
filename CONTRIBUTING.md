@@ -179,20 +179,25 @@ git checkout -b feat/my-awesome-feature
 # 3. 개발 및 테스트
 # 코드 작성...
 
-# 4. 코드 품질 검사
-pnpm lint            # ESLint 검사
+# 4. 코드 품질 검사 (선택사항 - 커밋 시 자동 실행됨)
+pnpm lint:check      # ESLint 검사
 pnpm check-types     # TypeScript 타입 검사
 pnpm format:check    # Prettier 포맷팅 검사
 
 # 5. 자동 수정 (필요시)
+pnpm lint:fix        # ESLint 오류 자동 수정
 pnpm format:fix      # 포맷팅 자동 수정
 
 # 6. 빌드 테스트
 pnpm build
 
-# 7. 변경사항 커밋
+# 7. 변경사항 커밋 (자동 품질 검사 실행됨)
 git add .
-git commit -m "feat: 새로운 기능 추가"
+git commit -m "feat: 새로운 기능 추가"  # 커밋 메시지 규약 자동 검증
+
+# 💡 참고: 커밋 시 자동으로 다음이 실행됩니다:
+# - Pre-commit: lint:check, format:check, check-types
+# - Commit-msg: 커밋 메시지 Conventional Commits 규약 검사
 
 # 8. 브랜치 푸시
 git push origin feat/my-awesome-feature
@@ -202,11 +207,14 @@ git push origin feat/my-awesome-feature
 
 | 명령어              | 목적        | 설명                            |
 | ------------------- | ----------- | ------------------------------- |
-| `pnpm lint`         | ESLint 검사 | 코드 스타일 및 잠재적 오류 검사 |
+| `pnpm lint:check`   | ESLint 검사 | 코드 스타일 및 잠재적 오류 검사 |
+| `pnpm lint:fix`     | ESLint 수정 | ESLint 오류 자동 수정           |
 | `pnpm check-types`  | 타입 검사   | TypeScript 타입 안전성 검사     |
 | `pnpm format:check` | 포맷팅 검사 | Prettier 코드 포맷팅 검사       |
 | `pnpm format:fix`   | 포맷팅 수정 | Prettier로 코드 자동 포맷팅     |
 | `pnpm build`        | 빌드 테스트 | 전체 프로젝트 빌드 검증         |
+
+**⚡ 자동 실행**: 위 명령어들 중 일부는 Git Hook Scripts에 의해 커밋 시 자동으로 실행됩니다.
 
 ## 코딩 스타일 가이드라인
 
@@ -399,13 +407,15 @@ BREAKING CHANGE: API 응답에서 user_id를 userId로 변경
 
 ### 1. PR 생성 전 체크리스트
 
-- [ ] 코드가 ESLint 규칙을 통과하는가? (`pnpm lint`)
-- [ ] TypeScript 타입 검사를 통과하는가? (`pnpm check-types`)
-- [ ] 코드 포맷팅이 올바른가? (`pnpm format:check`)
+- [ ] ~~코드가 ESLint 규칙을 통과하는가? (`pnpm lint:check`)~~ ✨ 자동 검사됨
+- [ ] ~~TypeScript 타입 검사를 통과하는가? (`pnpm check-types`)~~ ✨ 자동 검사됨
+- [ ] ~~코드 포맷팅이 올바른가? (`pnpm format:check`)~~ ✨ 자동 검사됨
+- [ ] ~~커밋 메시지가 규칙에 맞는가?~~ ✨ 자동 검사됨
 - [ ] 빌드가 성공하는가? (`pnpm build`)
 - [ ] 관련 테스트가 작성되었는가?
 - [ ] 문서가 업데이트되었는가?
-- [ ] 커밋 메시지가 규칙에 맞는가?
+
+**💡 Git Hook Scripts 덕분에 품질 검사 항목들이 커밋 시 자동으로 검증됩니다!**
 
 ### 2. PR 제목 및 설명
 

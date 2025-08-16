@@ -8,6 +8,7 @@
 
 - 🤖 **Claude Code 통합**: AI 기반 개발 워크플로우 자동화
 - 📝 **한국어 기술 문서**: 한국 개발자를 위한 전문 기술 문서 작성
+- 🎯 **Git 훅 스크립트**: 커밋 전 자동 코드 품질 검사 및 규약 준수
 - ⚡ **Turborepo**: 고성능 모노레포 빌드 시스템
 - 🔧 **TypeScript**: 타입 안전한 개발 환경
 - 📦 **pnpm**: 효율적인 패키지 관리
@@ -91,7 +92,10 @@ pnpm turbo build --filter=web
 
 ```bash
 # 린트 검사
-pnpm lint
+pnpm lint:check
+
+# 린트 오류 자동 수정
+pnpm lint:fix
 
 # 타입 체크
 pnpm check-types
@@ -102,6 +106,17 @@ pnpm format:check
 # 코드 포맷팅 적용
 pnpm format:fix
 ```
+
+**💡 자동 품질 검사**
+
+Git Hook Scripts가 설정되어 있어 커밋 시 자동으로 다음 검사가 실행됩니다:
+
+- 린트 규칙 검사 (`lint:check`)
+- 코드 포맷팅 검사 (`format:check`)
+- TypeScript 타입 검사 (`check-types`)
+- 커밋 메시지 규약 검사 (Conventional Commits)
+
+검사에 실패하면 커밋이 거부되므로 사전에 `pnpm lint:fix`와 `pnpm format:fix`로 문제를 해결하세요.
 
 ### Claude Code 활용
 
