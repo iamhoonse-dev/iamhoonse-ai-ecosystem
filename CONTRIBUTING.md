@@ -1044,6 +1044,30 @@ Conventional Commits 규약에 따른 커밋 메시지 작성 전문가
 @conventional-commit-writer 이 변경사항에 맞는 적절한 커밋 메시지를 만들어주세요
 ```
 
+#### @frontend-ecosystem-guru
+
+모던 프론트엔드 개발 (React, Next.js, TailwindCSS, Vite) 전문가
+
+```bash
+# 사용 예시
+@frontend-ecosystem-guru React 컴포넌트 아키텍처를 검토해주세요
+@frontend-ecosystem-guru Next.js 앱 성능 최적화 방법을 알려주세요
+@frontend-ecosystem-guru TailwindCSS 디자인 시스템 구축 가이드를 제공해주세요
+@frontend-ecosystem-guru Vite 빌드 설정을 최적화해주세요
+@frontend-ecosystem-guru 이 프론트엔드 코드에 대한 모범 사례를 제안해주세요
+```
+
+#### @js-ts-comment-auditor
+
+JavaScript/TypeScript 코드 주석 검토 및 개선 전문가
+
+```bash
+# 사용 예시
+@js-ts-comment-auditor 이 파일의 주석을 개선해주세요
+@js-ts-comment-auditor JSDoc 형식으로 함수 문서화를 도와주세요
+@js-ts-comment-auditor 코드 주석의 품질을 검토해주세요
+```
+
 ### 2. 슬래시 커맨드 활용
 
 #### `/update-documents`
@@ -1145,6 +1169,8 @@ git commit -m "생성된 커밋 메시지"
 @performance-code-auditor 이 PR의 성능 영향을 분석해주세요
 @security-vulnerability-auditor 보안 측면에서 검토해주세요
 @architecture-guru 아키텍처 관점에서 피드백을 주세요
+@frontend-ecosystem-guru 프론트엔드 코드 품질과 모범 사례를 검토해주세요
+@js-ts-comment-auditor 코드 주석의 완성도를 확인해주세요
 ```
 
 ## 커밋 메시지 자동화
@@ -1459,6 +1485,67 @@ pnpm build
 - [ ] 기존 코드를 깨뜨리지 않는가?
 - [ ] 성능에 미치는 영향은?
 - [ ] 문서 업데이트 필요성?
+
+### 4. 프론트엔드 개발 기여
+
+프론트엔드 관련 작업 시 `@frontend-ecosystem-guru` 에이전트를 적극 활용하세요:
+
+```bash
+# React 컴포넌트 개발 시
+@frontend-ecosystem-guru 이 React 컴포넌트의 구조와 성능을 검토해주세요
+
+# Next.js 기능 개발 시
+@frontend-ecosystem-guru Next.js 앱 라우터 구조를 최적화해주세요
+
+# TailwindCSS 스타일링 시
+@frontend-ecosystem-guru 이 TailwindCSS 클래스 구성이 적절한지 검토해주세요
+
+# Vite 설정 변경 시
+@frontend-ecosystem-guru Vite 빌드 성능을 개선하는 방법을 제안해주세요
+```
+
+#### 프론트엔드 기여 체크리스트
+
+- [ ] 모던 React 패턴 적용 (훅, 함수형 컴포넌트)
+- [ ] TypeScript 타입 안전성 확보
+- [ ] 성능 최적화 고려 (memoization, 코드 분할)
+- [ ] 접근성(a11y) 표준 준수
+- [ ] 반응형 디자인 구현
+- [ ] SEO 최적화 (Next.js 앱의 경우)
+- [ ] 빌드 성능 및 번들 크기 최적화
+
+#### 프론트엔드 코드 리뷰 가이드라인
+
+```tsx
+// ✅ 좋은 예: 타입 안전하고 성능 최적화된 컴포넌트
+interface UserCardProps {
+  user: User;
+  onClick?: (userId: string) => void;
+}
+
+export const UserCard: React.FC<UserCardProps> = React.memo(
+  ({ user, onClick }) => {
+    const handleClick = useCallback(() => {
+      onClick?.(user.id);
+    }, [onClick, user.id]);
+
+    return (
+      <div
+        className="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
+        role="button"
+        tabIndex={0}
+        onClick={handleClick}
+        onKeyDown={(e) => e.key === "Enter" && handleClick()}
+      >
+        <h3 className="text-lg font-semibold">{user.name}</h3>
+        <p className="text-gray-600">{user.email}</p>
+      </div>
+    );
+  },
+);
+
+UserCard.displayName = "UserCard";
+```
 
 ## 질문 및 도움
 
