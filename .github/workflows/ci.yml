@@ -131,3 +131,92 @@ jobs:
             echo "No tests configured yet"
           fi
         continue-on-error: true
+
+      - name: Generate test coverage report
+        run: |
+          # Create coverage report for PR comment
+          echo "## 🧪 테스트 실행 결과" > test-report.md
+          echo "" >> test-report.md
+          
+          # Check if coverage files exist
+          if [ -f "coverage/lcov-report/index.html" ] || [ -d "coverage" ]; then
+            echo "### 테스트 커버리지" >> test-report.md
+            
+            # Try to extract coverage percentage from various possible locations
+            COVERAGE_PERCENT="N/A"
+            if [ -f "coverage/coverage-summary.json" ]; then
+              COVERAGE_PERCENT=$(node -e "
+                try {
+                  const fs = require('fs');
+                  const coverage = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
+                  const total = coverage.total;
+                  if (total && total.lines) {
+                    console.log(total.lines.pct + '%');
+                  } else {
+                    console.log('N/A');
+                  }
+                } catch (e) {
+                  console.log('N/A');
+                }
+              ")
+            fi
+            
+            echo "- **라인 커버리지:** $COVERAGE_PERCENT" >> test-report.md
+            echo "- **커버리지 리포트:** 빌드 아티팩트에서 확인 가능" >> test-report.md
+          else
+            echo "### 테스트 상태" >> test-report.md
+            echo "- **상태:** 테스트가 구성되지 않았거나 실행되지 않음" >> test-report.md
+          fi
+          
+          echo "" >> test-report.md
+          echo "### 💡 테스트 개선 제안" >> test-report.md
+          echo "- 단위 테스트 추가로 코드 안정성 향상" >> test-report.md
+          echo "- 통합 테스트로 컴포넌트 간 상호작용 검증" >> test-report.md
+          echo "- E2E 테스트로 사용자 시나리오 검증" >> test-report.md
+          echo "- 테스트 커버리지 80% 이상 목표" >> test-report.md
+        continue-on-error: true
+
+      - name: Comment test results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            let testReport = '';
+            try {
+              testReport = fs.readFileSync('test-report.md', 'utf8');
+            } catch (error) {
+              testReport = '🧪 테스트 실행을 완료했습니다. 빌드 로그에서 세부 정보를 확인해주세요.';
+            }
+            
+            // Find existing test comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+            
+            const existingComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('🧪 테스트 실행 결과')
+            );
+            
+            const commentBody = testReport + '\n\n---\n*테스트 결과는 GitHub Actions에 의해 자동으로 생성되었습니다.*';
+            
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: commentBody
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: commentBody
+              });
+            }
+        continue-on-error: true

@@ -1,0 +1,273 @@
+name: PR Comment Reporter
+
+on:
+  workflow_run:
+    workflows: ["PR Quality Check", "Security Scan", "CI", "Deploy"]
+    types:
+      - completed
+
+jobs:
+  pr-comment-reporter:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.event == 'pull_request'
+    
+    steps:
+      - name: Get PR number
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pullRequests } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              head: `${context.repo.owner}:${context.payload.workflow_run.head_branch}`
+            });
+            
+            if (pullRequests.length === 0) {
+              core.setFailed('No open PR found for this branch');
+              return;
+            }
+            
+            const prNumber = pullRequests[0].number;
+            core.setOutput('pr_number', prNumber);
+            return prNumber;
+
+      - name: Get workflow runs for this PR
+        id: workflows
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = ${{ steps.pr.outputs.pr_number }};
+            
+            // Get all workflow runs for the PR
+            const workflowNames = ['PR Quality Check', 'Security Scan', 'CI', 'Deploy'];
+            const workflowResults = {};
+            
+            for (const workflowName of workflowNames) {
+              try {
+                const { data: workflows } = await github.rest.actions.listRepoWorkflows({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo
+                });
+                
+                const workflow = workflows.workflows.find(w => w.name === workflowName);
+                if (!workflow) continue;
+                
+                const { data: runs } = await github.rest.actions.listWorkflowRuns({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  workflow_id: workflow.id,
+                  head_sha: context.payload.workflow_run.head_sha
+                });
+                
+                if (runs.workflow_runs.length > 0) {
+                  const latestRun = runs.workflow_runs[0];
+                  workflowResults[workflowName] = {
+                    status: latestRun.status,
+                    conclusion: latestRun.conclusion,
+                    html_url: latestRun.html_url,
+                    run_started_at: latestRun.run_started_at,
+                    updated_at: latestRun.updated_at,
+                    id: latestRun.id
+                  };
+                }
+              } catch (error) {
+                console.error(`Error fetching ${workflowName}:`, error);
+              }
+            }
+            
+            core.setOutput('workflow_results', JSON.stringify(workflowResults));
+            return workflowResults;
+
+      - name: Get job details for failed workflows
+        id: job-details
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const workflowResults = JSON.parse('${{ steps.workflows.outputs.workflow_results }}');
+            const jobDetails = {};
+            
+            for (const [workflowName, result] of Object.entries(workflowResults)) {
+              if (result.conclusion === 'failure') {
+                try {
+                  const { data: jobs } = await github.rest.actions.listJobsForWorkflowRun({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    run_id: result.id
+                  });
+                  
+                  const failedJobs = jobs.jobs.filter(job => job.conclusion === 'failure');
+                  jobDetails[workflowName] = failedJobs.map(job => ({
+                    name: job.name,
+                    conclusion: job.conclusion,
+                    html_url: job.html_url,
+                    steps: job.steps?.filter(step => step.conclusion === 'failure').map(step => ({
+                      name: step.name,
+                      conclusion: step.conclusion
+                    })) || []
+                  }));
+                } catch (error) {
+                  console.error(`Error fetching job details for ${workflowName}:`, error);
+                }
+              }
+            }
+            
+            core.setOutput('job_details', JSON.stringify(jobDetails));
+            return jobDetails;
+
+      - name: Create or update PR comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = ${{ steps.pr.outputs.pr_number }};
+            const workflowResults = JSON.parse('${{ steps.workflows.outputs.workflow_results }}');
+            const jobDetails = JSON.parse('${{ steps.job-details.outputs.job_details }}');
+            
+            // Status emojis
+            const statusEmojis = {
+              success: '✅',
+              failure: '❌',
+              cancelled: '⏹️',
+              skipped: '⏭️',
+              in_progress: '🔄',
+              queued: '⏳'
+            };
+            
+            // Workflow descriptions in Korean
+            const workflowDescriptions = {
+              'PR Quality Check': '코드 품질 검사',
+              'Security Scan': '보안 스캔',
+              'CI': 'CI 파이프라인',
+              'Deploy': '배포 & 분석'
+            };
+            
+            // Build comment body
+            let commentBody = `## 🚀 PR 워크플로우 실행 결과\n\n`;
+            commentBody += `**PR 브랜치:** \`${context.payload.workflow_run.head_branch}\`\n`;
+            commentBody += `**커밋:** \`${context.payload.workflow_run.head_sha.substring(0, 7)}\`\n`;
+            commentBody += `**업데이트 시간:** ${new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })}\n\n`;
+            
+            // Overall status
+            const allResults = Object.values(workflowResults);
+            const hasFailures = allResults.some(r => r.conclusion === 'failure');
+            const hasInProgress = allResults.some(r => r.status === 'in_progress' || r.status === 'queued');
+            
+            if (hasInProgress) {
+              commentBody += `### 🔄 실행 중\n일부 워크플로우가 아직 실행 중입니다.\n\n`;
+            } else if (hasFailures) {
+              commentBody += `### ❌ 실행 실패\n일부 워크플로우에서 오류가 발생했습니다. 아래 세부사항을 확인해주세요.\n\n`;
+            } else if (allResults.length > 0 && allResults.every(r => r.conclusion === 'success')) {
+              commentBody += `### ✅ 모든 검사 통과\n모든 워크플로우가 성공적으로 완료되었습니다!\n\n`;
+            }
+            
+            // Individual workflow results
+            commentBody += `### 📋 세부 실행 결과\n\n`;
+            
+            for (const [workflowName, description] of Object.entries(workflowDescriptions)) {
+              const result = workflowResults[workflowName];
+              
+              if (result) {
+                const emoji = statusEmojis[result.conclusion] || statusEmojis[result.status] || '❓';
+                const duration = result.run_started_at && result.updated_at 
+                  ? Math.round((new Date(result.updated_at) - new Date(result.run_started_at)) / 1000)
+                  : null;
+                
+                commentBody += `#### ${emoji} ${description}\n`;
+                commentBody += `- **상태:** ${result.conclusion || result.status}\n`;
+                if (duration) commentBody += `- **실행 시간:** ${duration}초\n`;
+                commentBody += `- **로그:** [워크플로우 실행 결과 보기](${result.html_url})\n`;
+                
+                // Add failed job details
+                if (result.conclusion === 'failure' && jobDetails[workflowName]) {
+                  commentBody += `- **실패한 작업:**\n`;
+                  for (const job of jobDetails[workflowName]) {
+                    commentBody += `  - 🔗 [${job.name}](${job.html_url})\n`;
+                    if (job.steps.length > 0) {
+                      commentBody += `    - 실패한 단계: ${job.steps.map(s => s.name).join(', ')}\n`;
+                    }
+                  }
+                }
+                commentBody += `\n`;
+              } else {
+                commentBody += `#### ⏭️ ${description}\n`;
+                commentBody += `- **상태:** 실행되지 않음 (조건에 맞지 않음)\n\n`;
+              }
+            }
+            
+            // Add helpful information for failures
+            if (hasFailures) {
+              commentBody += `### 🛠️ 문제 해결 가이드\n\n`;
+              
+              if (workflowResults['PR Quality Check']?.conclusion === 'failure') {
+                commentBody += `#### 코드 품질 검사 실패\n`;
+                commentBody += `- **ESLint 오류:** \`pnpm lint\`로 로컬에서 확인하고 \`pnpm lint:fix\`로 자동 수정\n`;
+                commentBody += `- **TypeScript 오류:** \`pnpm check-types\`로 타입 오류 확인\n`;
+                commentBody += `- **포맷팅 오류:** \`pnpm format\`로 코드 포맷팅 수정\n`;
+                commentBody += `- **빌드 실패:** 의존성이나 구문 오류 확인\n\n`;
+              }
+              
+              if (workflowResults['Security Scan']?.conclusion === 'failure') {
+                commentBody += `#### 보안 스캔 실패\n`;
+                commentBody += `- **의존성 취약점:** \`pnpm audit\`로 확인하고 \`pnpm audit --fix\`로 수정\n`;
+                commentBody += `- **CodeQL 경고:** 코드 분석 결과를 확인하여 보안 이슈 해결\n`;
+                commentBody += `- **시크릿 스캔:** 하드코딩된 API 키나 민감한 정보 제거\n\n`;
+              }
+              
+              if (workflowResults['CI']?.conclusion === 'failure') {
+                commentBody += `#### CI 파이프라인 실패\n`;
+                commentBody += `- **테스트 실패:** 로컬에서 \`pnpm test\` 실행하여 확인\n`;
+                commentBody += `- **빌드 오류:** 각 패키지별로 \`pnpm build\` 실행하여 확인\n`;
+                commentBody += `- **의존성 오류:** \`pnpm install\` 재실행\n\n`;
+              }
+            }
+            
+            // Success metrics
+            if (allResults.length > 0 && allResults.every(r => r.conclusion === 'success')) {
+              commentBody += `### 📊 성과 지표\n\n`;
+              const totalDuration = allResults
+                .filter(r => r.run_started_at && r.updated_at)
+                .reduce((sum, r) => sum + (new Date(r.updated_at) - new Date(r.run_started_at)), 0);
+              
+              if (totalDuration > 0) {
+                commentBody += `- **전체 실행 시간:** ${Math.round(totalDuration / 1000)}초\n`;
+              }
+              commentBody += `- **실행된 워크플로우:** ${Object.keys(workflowResults).length}개\n`;
+              commentBody += `- **품질 검사:** 통과 ✅\n`;
+              commentBody += `- **보안 검사:** 통과 🛡️\n`;
+              commentBody += `- **빌드 검사:** 통과 🔨\n\n`;
+            }
+            
+            commentBody += `---\n`;
+            commentBody += `*이 코멘트는 GitHub Actions에 의해 자동으로 생성되었습니다.*`;
+            
+            // Find existing comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber
+            });
+            
+            const existingComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('🚀 PR 워크플로우 실행 결과')
+            );
+            
+            // Create or update comment
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: commentBody
+              });
+              console.log('Updated existing PR comment');
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: commentBody
+              });
+              console.log('Created new PR comment');
+            }

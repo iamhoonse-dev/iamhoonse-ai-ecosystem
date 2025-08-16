@@ -49,3 +49,132 @@ jobs:
       - name: Security audit
         run: pnpm audit --audit-level moderate
         continue-on-error: true
+
+      - name: Generate quality report
+        if: matrix.node-version == '18.x'
+        run: |
+          # Create quality report for PR comment
+          echo "## 📋 코드 품질 검사 결과" > quality-report.md
+          echo "" >> quality-report.md
+          echo "**Node.js 버전:** ${{ matrix.node-version }}" >> quality-report.md
+          echo "" >> quality-report.md
+          
+          # ESLint results
+          echo "### 🔍 ESLint 검사" >> quality-report.md
+          if pnpm lint --format=json > eslint-results.json 2>/dev/null; then
+            echo "- **상태:** ✅ 통과" >> quality-report.md
+            echo "- **린트 오류:** 0개" >> quality-report.md
+          else
+            LINT_ERRORS=$(pnpm lint 2>&1 | grep -c "error" || echo "0")
+            LINT_WARNINGS=$(pnpm lint 2>&1 | grep -c "warning" || echo "0")
+            echo "- **상태:** ❌ 실패" >> quality-report.md
+            echo "- **린트 오류:** ${LINT_ERRORS}개" >> quality-report.md
+            echo "- **린트 경고:** ${LINT_WARNINGS}개" >> quality-report.md
+          fi
+          
+          # TypeScript check results
+          echo "" >> quality-report.md
+          echo "### 📝 TypeScript 타입 검사" >> quality-report.md
+          if pnpm check-types > ts-results.txt 2>&1; then
+            echo "- **상태:** ✅ 통과" >> quality-report.md
+            echo "- **타입 오류:** 0개" >> quality-report.md
+          else
+            TS_ERRORS=$(cat ts-results.txt | grep -c "error" || echo "0")
+            echo "- **상태:** ❌ 실패" >> quality-report.md
+            echo "- **타입 오류:** ${TS_ERRORS}개" >> quality-report.md
+          fi
+          
+          # Format check results
+          echo "" >> quality-report.md
+          echo "### 🎨 코드 포맷팅 검사" >> quality-report.md
+          if pnpm format:check > format-results.txt 2>&1; then
+            echo "- **상태:** ✅ 통과" >> quality-report.md
+            echo "- **포맷팅 이슈:** 0개" >> quality-report.md
+          else
+            echo "- **상태:** ❌ 실패" >> quality-report.md
+            echo "- **포맷팅 이슈:** 포맷팅이 필요한 파일이 있습니다" >> quality-report.md
+          fi
+          
+          # Build results
+          echo "" >> quality-report.md
+          echo "### 🔨 빌드 검사" >> quality-report.md
+          if pnpm build > build-results.txt 2>&1; then
+            echo "- **상태:** ✅ 성공" >> quality-report.md
+            echo "- **빌드 오류:** 0개" >> quality-report.md
+            
+            # Get build time if available
+            if [ -f "build-results.txt" ]; then
+              BUILD_TIME=$(grep -i "completed in" build-results.txt | head -1 || echo "")
+              if [ ! -z "$BUILD_TIME" ]; then
+                echo "- **빌드 시간:** $BUILD_TIME" >> quality-report.md
+              fi
+            fi
+          else
+            echo "- **상태:** ❌ 실패" >> quality-report.md
+            echo "- **빌드 오류:** 빌드 중 오류 발생" >> quality-report.md
+          fi
+          
+          # Security audit results
+          echo "" >> quality-report.md
+          echo "### 🛡️ 보안 감사" >> quality-report.md
+          if pnpm audit --audit-level moderate > audit-results.txt 2>&1; then
+            echo "- **상태:** ✅ 통과" >> quality-report.md
+            echo "- **보안 취약점:** 0개 (moderate 수준 이상)" >> quality-report.md
+          else
+            VULN_COUNT=$(grep -c "vulnerabilities" audit-results.txt || echo "0")
+            echo "- **상태:** ⚠️ 주의" >> quality-report.md
+            echo "- **보안 취약점:** 발견됨 (상세 내용은 로그 확인)" >> quality-report.md
+          fi
+          
+          echo "" >> quality-report.md
+          echo "### 💡 개선 제안" >> quality-report.md
+          echo "- 모든 린트 오류와 경고를 해결해주세요" >> quality-report.md
+          echo "- TypeScript strict 모드 사용을 권장합니다" >> quality-report.md
+          echo "- 일관된 코드 스타일을 위해 Prettier를 활용해주세요" >> quality-report.md
+          echo "- 보안 취약점이 발견된 경우 즉시 업데이트해주세요" >> quality-report.md
+        continue-on-error: true
+
+      - name: Comment quality results
+        if: matrix.node-version == '18.x' && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            let qualityReport = '';
+            try {
+              qualityReport = fs.readFileSync('quality-report.md', 'utf8');
+            } catch (error) {
+              qualityReport = '📋 코드 품질 검사를 완료했습니다. 빌드 로그에서 세부 정보를 확인해주세요.';
+            }
+            
+            // Find existing quality comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+            
+            const existingComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('📋 코드 품질 검사 결과')
+            );
+            
+            const commentBody = qualityReport + '\n\n---\n*품질 검사 결과는 GitHub Actions에 의해 자동으로 생성되었습니다.*';
+            
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: commentBody
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: commentBody
+              });
+            }
+        continue-on-error: true

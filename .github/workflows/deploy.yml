@@ -100,15 +100,92 @@ jobs:
           # Add bundle analysis tools like @next/bundle-analyzer
           echo "Bundle analysis completed"
           
-      - name: Comment bundle size
+      - name: Analyze bundle size
+        run: |
+          # Create bundle analysis report
+          echo "## 📦 번들 크기 분석 결과" > bundle-report.md
+          echo "" >> bundle-report.md
+          
+          # Check if Next.js apps exist and analyze
+          if [ -d "apps/web" ] && [ -f "apps/web/package.json" ]; then
+            echo "### Web App 번들 크기" >> bundle-report.md
+            cd apps/web
+            if [ -d ".next" ]; then
+              # Get build size information
+              BUILD_SIZE=$(du -sh .next 2>/dev/null | cut -f1 || echo "N/A")
+              echo "- **빌드 크기:** $BUILD_SIZE" >> ../../bundle-report.md
+            fi
+            cd ../..
+          fi
+          
+          if [ -d "apps/docs" ] && [ -f "apps/docs/package.json" ]; then
+            echo "### Docs App 번들 크기" >> bundle-report.md
+            cd apps/docs
+            if [ -d ".next" ] || [ -d "dist" ]; then
+              BUILD_SIZE=$(du -sh .next dist 2>/dev/null | cut -f1 | head -1 || echo "N/A")
+              echo "- **빌드 크기:** $BUILD_SIZE" >> ../../bundle-report.md
+            fi
+            cd ../..
+          fi
+          
+          # Add package sizes
+          echo "" >> bundle-report.md
+          echo "### 패키지 빌드 크기" >> bundle-report.md
+          for package in packages/*/dist; do
+            if [ -d "$package" ]; then
+              PACKAGE_NAME=$(basename $(dirname "$package"))
+              PACKAGE_SIZE=$(du -sh "$package" 2>/dev/null | cut -f1)
+              echo "- **$PACKAGE_NAME:** $PACKAGE_SIZE" >> bundle-report.md
+            fi
+          done
+          
+          # Add recommendations
+          echo "" >> bundle-report.md
+          echo "### 💡 최적화 권장사항" >> bundle-report.md
+          echo "- Tree shaking을 통한 불필요한 코드 제거" >> bundle-report.md
+          echo "- 동적 import를 활용한 코드 스플리팅" >> bundle-report.md
+          echo "- 이미지 최적화 (WebP, AVIF 형식 사용)" >> bundle-report.md
+          echo "- 번들 분석기 사용: \`pnpm analyze\`" >> bundle-report.md
+
+      - name: Comment bundle analysis
         uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
-            // Read bundle analysis results and comment on PR
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
+            
+            let bundleReport = '';
+            try {
+              bundleReport = fs.readFileSync('bundle-report.md', 'utf8');
+            } catch (error) {
+              bundleReport = '📦 번들 분석을 완료했습니다. 빌드 로그에서 세부 정보를 확인해주세요.';
+            }
+            
+            // Find existing bundle comment
+            const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '📦 Bundle analysis completed. Check the build logs for details.'
+              issue_number: context.issue.number
             });
+            
+            const existingComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('📦 번들 크기 분석 결과')
+            );
+            
+            const commentBody = bundleReport + '\n\n---\n*번들 분석은 GitHub Actions에 의해 자동으로 생성되었습니다.*';
+            
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: commentBody
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: commentBody
+              });
+            }
