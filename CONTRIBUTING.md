@@ -100,7 +100,38 @@ pnpm build
 pnpm lint
 pnpm check-types
 pnpm format:check
+
+# 보안 감사
+pnpm audit
 ```
+
+### 5. CI/CD 워크플로우 이해
+
+프로젝트는 4개의 자동화된 GitHub Actions 워크플로우를 사용합니다:
+
+#### CI 워크플로우 (`.github/workflows/ci.yml`)
+
+- **언제 실행되는가**: `main` 브랜치 push 또는 PR 생성/업데이트
+- **주요 기능**: 변경사항 감지, 린트/타입체크, 멀티 Node.js 빌드, 테스트
+- **개발자 액션**: 코드 push 전 `pnpm lint && pnpm check-types && pnpm build` 실행
+
+#### PR Quality Check (`.github/workflows/pr-quality-check.yml`)
+
+- **언제 실행되는가**: PR 생성/업데이트 시
+- **주요 기능**: 코드 품질 검사, 보안 감사
+- **개발자 액션**: PR 생성 전 로컬 테스트 완료
+
+#### Security Scan (`.github/workflows/security-scan.yml`)
+
+- **언제 실행되는가**: `main` push, PR, 주간 정기 스캔
+- **주요 기능**: CodeQL 정적 분석, 의존성 취약점 스캔, 시크릿 검사
+- **개발자 액션**: 민감한 정보 하드코딩 금지, 정기적인 의존성 업데이트
+
+#### Deploy (`.github/workflows/deploy.yml`)
+
+- **언제 실행되는가**: `main` push, 수동 실행
+- **주요 기능**: 문서 배포, 성능 테스트, 번들 분석
+- **개발자 액션**: PR에서 번들 크기 댓글 확인 및 성능 고려
 
 ## 프로젝트 구조 이해하기
 
@@ -207,6 +238,7 @@ git push origin feat/my-awesome-feature
 | `pnpm format:check` | 포맷팅 검사 | Prettier 코드 포맷팅 검사       |
 | `pnpm format:fix`   | 포맷팅 수정 | Prettier로 코드 자동 포맷팅     |
 | `pnpm build`        | 빌드 테스트 | 전체 프로젝트 빌드 검증         |
+| `pnpm audit`        | 보안 감사   | npm 의존성 취약점 검사          |
 
 ## 코딩 스타일 가이드라인
 
@@ -399,13 +431,31 @@ BREAKING CHANGE: API 응답에서 user_id를 userId로 변경
 
 ### 1. PR 생성 전 체크리스트
 
+#### 코드 품질 검사
+
 - [ ] 코드가 ESLint 규칙을 통과하는가? (`pnpm lint`)
 - [ ] TypeScript 타입 검사를 통과하는가? (`pnpm check-types`)
 - [ ] 코드 포맷팅이 올바른가? (`pnpm format:check`)
 - [ ] 빌드가 성공하는가? (`pnpm build`)
 - [ ] 관련 테스트가 작성되었는가?
+
+#### 보안 및 성능 검사
+
+- [ ] 보안 취약점이 없는가? (`pnpm audit`)
+- [ ] 민감한 정보(비밀번호, API 키 등)가 하드코딩되지 않았는가?
+- [ ] 새로운 의존성이 추가된 경우 보안 이슈가 없는가?
+- [ ] 성능에 영향을 주는 변경사항은 없는가?
+
+#### 문서 및 커밋
+
 - [ ] 문서가 업데이트되었는가?
-- [ ] 커밋 메시지가 규칙에 맞는가?
+- [ ] 커밋 메시지가 규칙에 맞는가? (Conventional Commits)
+
+#### CI/CD 워크플로우 고려사항
+
+- [ ] 워크플로우 파일을 수정한 경우 로직이 올바른가?
+- [ ] 새로운 GitHub Actions를 추가한 경우 필요한 권한이 설정되었는가?
+- [ ] 배포 관련 변경사항이 있는 경우 스테이징 환경에서 테스트했는가?
 
 ### 2. PR 제목 및 설명
 
@@ -468,6 +518,10 @@ git push origin feat/my-feature
 # 4. GitHub에서 PR 생성
 # 또는 Claude Code 사용
 /create-pr
+
+# 5. CI/CD 워크플로우 확인
+# PR 생성 후 자동으로 실행되는 워크플로우들을 모니터링하고
+# 모든 검사가 성공적으로 완료되었는지 확인
 ```
 
 ### 4. 자동화된 PR 생성 (Claude Code)
@@ -898,6 +952,17 @@ pnpm add @repo/package-name
 # 사용 예시
 @workflow-efficiency-guru 개발 프로세스를 개선해주세요
 @workflow-efficiency-guru CI/CD 파이프라인을 최적화해주세요
+```
+
+#### @cicd-pipeline-architect
+
+CI/CD 파이프라인 설계 및 DevOps 전문가
+
+```bash
+# 사용 예시
+@cicd-pipeline-architect GitHub Actions 워크플로우를 최적화해주세요
+@cicd-pipeline-architect 새로운 배포 전략을 설계해주세요
+@cicd-pipeline-architect CI/CD 보안을 강화해주세요
 ```
 
 ### 2. 슬래시 커맨드 활용

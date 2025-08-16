@@ -39,11 +39,71 @@ iamhoonse-ai-ecosystem/
 - **performance-code-auditor**: 코드 성능 최적화 전문가
 - **security-vulnerability-auditor**: 보안 취약점 분석 전문가
 - **workflow-efficiency-guru**: 개발 워크플로우 최적화 전문가
+- **cicd-pipeline-architect**: CI/CD 파이프라인 설계 및 DevOps 전문가
 
 ### Slash 커맨드
 
 - `/update-documents`: 저장소 문서 자동 업데이트
 - `/create-pr`: 자동화된 풀 리퀘스트 생성
+
+## CI/CD 파이프라인
+
+프로젝트는 GitHub Actions를 통한 완전 자동화된 CI/CD 파이프라인을 제공합니다.
+
+### 워크플로우 개요
+
+#### 🔄 CI (Continuous Integration)
+
+- **트리거**: `main` 브랜치 push, Pull Request 생성/업데이트
+- **실행 단계**:
+  - 변경사항 감지 (packages, apps, docs)
+  - ESLint 검사 및 TypeScript 타입 체크
+  - 코드 포맷팅 검증
+  - 멀티 Node.js 버전 빌드 (18.x, 20.x)
+  - 테스트 실행
+  - 빌드 아티팩트 캐싱
+
+#### ✅ PR Quality Check
+
+- **트리거**: Pull Request 생성/업데이트
+- **실행 단계**:
+  - 코드 품질 검사 (ESLint, TypeScript, Prettier)
+  - 멀티 Node.js 버전 호환성 테스트
+  - 프로젝트 빌드 검증
+  - 보안 감사 (npm audit)
+
+#### 🔒 Security Scan
+
+- **트리거**: `main` 브랜치 push, PR, 주간 정기 스캔 (일요일)
+- **실행 단계**:
+  - **CodeQL 분석**: JavaScript/TypeScript 정적 분석
+  - **의존성 보안 스캔**: 패키지 취약점 검사
+  - **시크릿 스캔**: TruffleHog를 통한 민감 정보 탐지
+
+#### 🚀 Deploy
+
+- **트리거**: `main` 브랜치 push, 수동 실행
+- **실행 단계**:
+  - **문서 배포**: docs 앱 변경사항 감지 시 자동 배포
+  - **성능 테스트**: Lighthouse CI를 통한 웹 성능 모니터링
+  - **번들 분석**: PR 시 번들 크기 분석 및 코멘트
+
+### 워크플로우 파일 위치
+
+```
+.github/workflows/
+├── ci.yml              # 메인 CI 파이프라인
+├── pr-quality-check.yml # PR 품질 검사
+├── security-scan.yml    # 보안 스캔
+└── deploy.yml           # 배포 및 성능 모니터링
+```
+
+### 개발자 가이드라인
+
+- **PR 생성 전**: 로컬에서 `pnpm lint`, `pnpm check-types`, `pnpm build` 실행
+- **보안**: 민감한 정보를 코드에 하드코딩하지 않기 (시크릿 스캔으로 자동 감지)
+- **성능**: PR 시 번들 크기 변화를 확인하고 최적화 고려
+- **테스트**: 새로운 기능에 대한 테스트 작성 권장
 
 ## 시작하기
 
