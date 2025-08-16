@@ -40,11 +40,13 @@ iamhoonse-ai-ecosystem/
 - **performance-code-auditor**: 코드 성능 최적화 전문가
 - **security-vulnerability-auditor**: 보안 취약점 분석 전문가
 - **workflow-efficiency-guru**: 개발 워크플로우 최적화 전문가
+- **conventional-commit-writer**: Conventional Commits 규약에 따른 커밋 메시지 작성 전문가
 
 ### Slash 커맨드
 
 - `/update-documents`: 저장소 문서 자동 업데이트
 - `/create-pr`: 자동화된 풀 리퀘스트 생성
+- `/write-commit-message`: Conventional Commits 규약에 따른 커밋 메시지 자동 생성
 
 ## 시작하기
 
@@ -122,7 +124,28 @@ Git Hook Scripts가 설정되어 있어 커밋 시 자동으로 다음 검사가
 
 1. **문서 업데이트**: `/update-documents` 명령어로 자동 문서 업데이트
 2. **PR 생성**: `/create-pr` 명령어로 자동화된 풀 리퀘스트 생성
-3. **AI 리뷰**: 코드 변경사항에 대한 AI 기반 리뷰 및 피드백
+3. **커밋 메시지 작성**: `/write-commit-message` 명령어로 Conventional Commits 규약에 따른 커밋 메시지 자동 생성
+4. **AI 리뷰**: 코드 변경사항에 대한 AI 기반 리뷰 및 피드백
+
+#### 커밋 메시지 자동화 워크플로우
+
+```bash
+# 1. 변경사항 스테이징
+git add .
+
+# 2. Claude Code로 커밋 메시지 생성
+/write-commit-message
+
+# 3. 생성된 메시지로 커밋 (자동 품질 검사 포함)
+git commit -m "생성된-커밋-메시지"
+```
+
+**💡 자동 커밋 메시지 생성 기능**
+
+- **AI 기반 분석**: 스테이징된 파일의 변경사항을 자동으로 분석
+- **Conventional Commits**: 표준 커밋 메시지 규약 자동 적용
+- **한국어/영어 지원**: 프로젝트 컨텍스트에 맞는 언어 선택
+- **타입 자동 분류**: feat, fix, docs, chore 등 적절한 타입 자동 선택
 
 ## 패키지 상세
 
