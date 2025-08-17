@@ -22,6 +22,7 @@ iamhoonse-ai-ecosystem/
 │   └── web/           # 메인 웹 애플리케이션 (Next.js)
 ├── packages/
 │   ├── ui/            # 공유 React 컴포넌트 라이브러리
+│   ├── utils-common/  # 공통 유틸리티 함수 패키지
 │   ├── eslint-config/ # ESLint 설정 패키지
 │   └── typescript-config/ # TypeScript 설정 패키지
 └── .claude/
@@ -185,6 +186,33 @@ git commit -m "생성된-커밋-메시지"
 
 - 프로젝트 전체에서 사용하는 ESLint 설정
 - Next.js와 Prettier 설정 포함
+
+#### `@repo/utils-common`
+
+- 공통 유틸리티 함수 라이브러리
+- TypeScript로 작성된 재사용 가능한 유틸리티 함수
+- Tree-shaking 지원으로 필요한 기능만 선택적 임포트
+- ESM/CJS 모듈 형식 지원
+- 카테고리별 함수 분리 (`string` 카테고리)
+
+**주요 기능:**
+
+- `isEmptyString`: 문자열 빈 값 검사 함수
+
+**사용 예시:**
+
+```typescript
+// 전체 임포트
+import { isEmptyString } from "@repo/utils-common";
+
+// 카테고리별 임포트 (권장 - Tree-shaking 최적화)
+import { isEmptyString } from "@repo/utils-common/string";
+
+// 사용
+isEmptyString(""); // true
+isEmptyString("   "); // true
+isEmptyString("hello"); // false
+```
 
 #### `@repo/typescript-config`
 

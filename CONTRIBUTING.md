@@ -137,6 +137,7 @@ iamhoonse-ai-ecosystem/
 │   └── web/                      # 메인 웹 앱 (Next.js)
 ├── packages/                      # 공유 패키지들
 │   ├── ui/                       # React 컴포넌트 라이브러리
+│   ├── utils-common/             # 공통 유틸리티 함수 라이브러리
 │   ├── eslint-config/            # ESLint 설정
 │   └── typescript-config/        # TypeScript 설정
 ├── .claude/                       # Claude Code 설정
@@ -1378,7 +1379,101 @@ git add src/components/ src/pages/ src/utils/
 
 ## 패키지별 기여 가이드
 
-### 1. `@repo/ui` 패키지
+### 1. `@repo/utils-common` 패키지
+
+공통 유틸리티 함수 라이브러리에 기여할 때:
+
+```bash
+# 개발 환경 실행
+cd packages/utils-common
+pnpm dev
+
+# 유틸리티 함수 빌드
+pnpm build
+
+# 유틸리티 함수 테스트 (추가될 예정)
+pnpm test
+```
+
+#### 새 유틸리티 함수 추가 체크리스트
+
+- [ ] TypeScript 인터페이스 정의
+- [ ] JSDoc 문서 작성
+- [ ] Tree-shaking을 위한 카테고리별 분류
+- [ ] 단위 테스트 작성 (추후)
+- [ ] 사용 예제 문서화
+- [ ] 에러 케이스 처리
+
+#### 유틸리티 함수 구조 가이드라인
+
+**디렉토리 구조:**
+
+```
+src/
+├── <category>/          # 카테고리별 분류 (예: string, number, array)
+│   ├── index.ts        # 카테고리 내 함수들 export
+│   └── <function-name>/
+│       └── index.ts    # 개별 함수 구현
+└── index.ts           # 전체 함수들 export
+```
+
+**함수 작성 예시:**
+
+````typescript
+// src/string/isEmptyString/index.ts
+/**
+ * 문자열이 빈 값인지 확인합니다.
+ *
+ * @param value - 검사할 문자열 값
+ * @returns 빈 문자열인 경우 true, 그렇지 않으면 false
+ *
+ * @example
+ * ```typescript
+ * import { isEmptyString } from '@repo/utils-common/string';
+ *
+ * isEmptyString('');          // true
+ * isEmptyString('   ');       // true
+ * isEmptyString(null);        // true
+ * isEmptyString('hello');     // false
+ * ```
+ */
+export function isEmptyString(value: string | null | undefined): boolean {
+  return value == null || value.trim().length === 0;
+}
+````
+
+**Export 구조:**
+
+```typescript
+// src/string/index.ts - 카테고리별 export
+export { isEmptyString } from "./isEmptyString/index.js";
+
+// src/index.ts - 전체 export
+export * from "./string/index.js";
+```
+
+**Tree-shaking 지원:**
+
+- 카테고리별 import를 권장: `import { isEmptyString } from '@repo/utils-common/string'`
+- 전체 import도 지원: `import { isEmptyString } from '@repo/utils-common'`
+- package.json의 exports 필드를 통한 명시적 진입점 설정
+
+#### 지원 카테고리
+
+현재 지원하는 유틸리티 카테고리:
+
+- **`string`**: 문자열 관련 유틸리티 함수
+  - `isEmptyString`: 문자열 빈 값 검사
+
+향후 추가 예정 카테고리:
+
+- `number`: 숫자 관련 유틸리티 함수
+- `array`: 배열 관련 유틸리티 함수
+- `object`: 객체 관련 유틸리티 함수
+- `date`: 날짜 관련 유틸리티 함수
+- `validation`: 데이터 검증 관련 함수
+
+### 2. `@repo/ui` 패키지
 
 UI 컴포넌트 라이브러리에 기여할 때:
 
@@ -1457,6 +1552,30 @@ pnpm turbo dev --filter=docs
 
 # 빌드 테스트
 pnpm turbo build --filter=web
+```
+
+#### 애플리케이션에서 utils-common 패키지 사용
+
+```typescript
+// 유틸리티 함수 import (Tree-shaking 권장)
+import { isEmptyString } from '@repo/utils-common/string';
+
+// 애플리케이션에서 사용
+export default function MyComponent() {
+  const handleInput = (value: string) => {
+    if (isEmptyString(value)) {
+      console.log('빈 입력값입니다');
+      return;
+    }
+    // 비즈니스 로직 처리
+  };
+
+  return (
+    <div>
+      {/* 컴포넌트 렌더링 */}
+    </div>
+  );
+}
 ```
 
 #### 새 페이지/기능 추가 체크리스트
