@@ -23,6 +23,7 @@ iamhoonse-ai-ecosystem/
 ├── packages/
 │   ├── ui/            # 공유 React 컴포넌트 라이브러리
 │   ├── utils-common/  # 공통 유틸리티 함수 패키지
+│   ├── node-utils/    # Node.js 전용 유틸리티 함수 패키지
 │   ├── eslint-config/ # ESLint 설정 패키지
 │   └── typescript-config/ # TypeScript 설정 패키지
 └── .claude/
@@ -191,6 +192,7 @@ git commit -m "생성된-커밋-메시지"
 
 - 공통 유틸리티 함수 라이브러리
 - TypeScript로 작성된 재사용 가능한 유틸리티 함수
+- **범용 환경 지원**: 브라우저, Node.js 모든 환경에서 동작
 - Tree-shaking 지원으로 필요한 기능만 선택적 임포트
 - ESM/CJS 모듈 형식 지원
 - 카테고리별 함수 분리 (`string` 카테고리)
@@ -213,6 +215,56 @@ isEmptyString(""); // true
 isEmptyString("   "); // true
 isEmptyString("hello"); // false
 ```
+
+#### `@repo/node-utils`
+
+- **Node.js 전용** 유틸리티 함수 라이브러리
+- TypeScript로 작성된 서버사이드 전용 유틸리티 함수
+- **Node.js 22+ 환경에서만 동작** (node: 프로토콜 사용)
+- Tree-shaking 지원으로 필요한 기능만 선택적 임포트
+- ESM/CJS 모듈 형식 지원
+- 카테고리별 함수 분리 (`fs` 카테고리)
+
+**주요 기능:**
+
+- `ls`: Unix ls 명령어와 유사한 디렉토리 목록 조회 함수
+  - 파일/디렉토리 정보 제공 (이름, 경로, 타입, 크기, 수정시간)
+  - 숨김 파일 포함 옵션
+  - 정렬 기능 (디렉토리 우선, 알파벳순)
+  - 상세한 에러 처리
+
+**사용 예시:**
+
+```typescript
+// 카테고리별 임포트 (권장 - Tree-shaking 최적화)
+import { ls } from "@repo/node-utils/fs";
+
+// 사용
+const entries = await ls("./");
+console.log(
+  entries.map((e) => `${e.name} (${e.isDirectory ? "dir" : "file"})`),
+);
+
+// 숨김 파일 포함
+const allEntries = await ls("./", { includeHidden: true });
+
+// 파일 정보 확인
+entries.forEach((entry) => {
+  console.log(
+    `${entry.name}: ${entry.size} bytes, modified ${entry.modifiedTime}`,
+  );
+});
+```
+
+**utils-common과의 차이점:**
+
+| 특징             | utils-common        | node-utils          |
+| ---------------- | ------------------- | ------------------- |
+| **실행 환경**    | 브라우저 + Node.js  | Node.js 전용        |
+| **Node.js 버전** | 범용                | 22+ 필수            |
+| **API 접근**     | Web API + 공통 기능 | Node.js 내장 모듈   |
+| **용도**         | 범용 유틸리티       | 서버사이드 전용     |
+| **예시 기능**    | 문자열, 배열 처리   | 파일시스템, OS 기능 |
 
 #### `@repo/typescript-config`
 
