@@ -41,6 +41,8 @@ iamhoonse-ai-ecosystem/
 - **security-vulnerability-auditor**: 보안 취약점 분석 전문가
 - **workflow-efficiency-guru**: 개발 워크플로우 최적화 전문가
 - **conventional-commit-writer**: Conventional Commits 규약에 따른 커밋 메시지 작성 전문가
+- **frontend-ecosystem-guru**: 모던 프론트엔드 개발 (React, Next.js, TailwindCSS, Vite) 전문가
+- **js-ts-comment-auditor**: JavaScript/TypeScript 코드 주석 검토 및 개선 전문가
 
 ### Slash 커맨드
 
