@@ -1381,7 +1381,7 @@ git add src/components/ src/pages/ src/utils/
 
 ### 1. `@repo/utils-common` 패키지
 
-공통 유틸리티 함수 라이브러리에 기여할 때:
+**범용 환경 지원** 공통 유틸리티 함수 라이브러리에 기여할 때:
 
 ```bash
 # 개발 환경 실행
@@ -1473,7 +1473,155 @@ export * from "./string/index.js";
 - `date`: 날짜 관련 유틸리티 함수
 - `validation`: 데이터 검증 관련 함수
 
-### 2. `@repo/ui` 패키지
+### 2. `@repo/node-utils` 패키지
+
+**Node.js 전용** 유틸리티 함수 라이브러리에 기여할 때:
+
+```bash
+# 개발 환경 실행
+cd packages/node-utils
+pnpm dev
+
+# Node.js 유틸리티 함수 빌드
+pnpm build
+
+# Node.js 유틸리티 함수 테스트 (추가될 예정)
+pnpm test
+```
+
+#### Node.js 유틸리티 함수 추가 체크리스트
+
+- [ ] **Node.js 22+ 호환성** 확인
+- [ ] TypeScript 인터페이스 정의
+- [ ] JSDoc 문서 작성 (Node.js 전용임을 명시)
+- [ ] Tree-shaking을 위한 카테고리별 분류
+- [ ] 단위 테스트 작성 (추후)
+- [ ] Node.js 환경에서의 사용 예제 문서화
+- [ ] 에러 케이스 처리 (파일 권한, 경로 오류 등)
+- [ ] **node: 프로토콜 사용** (예: `import { readdir } from "node:fs/promises"`)
+
+#### Node.js 유틸리티 함수 구조 가이드라인
+
+**디렉토리 구조:**
+
+```
+src/
+├── <category>/          # 카테고리별 분류 (예: fs, os, process)
+│   ├── index.ts        # 카테고리 내 함수들 export
+│   └── <function-name>/
+│       └── index.ts    # 개별 함수 구현
+└── index.ts           # 전체 함수들 export
+```
+
+**함수 작성 예시:**
+
+````typescript
+// src/fs/ls/index.ts
+import { readdir, stat } from "node:fs/promises";
+import { join } from "node:path";
+
+/**
+ * 디렉토리 내용을 조회합니다. (Node.js 전용)
+ *
+ * Unix ls 명령어와 유사한 기능을 제공하며,
+ * Node.js 환경에서만 동작합니다.
+ *
+ * @param dirPath - 조회할 디렉토리 경로
+ * @param options - 조회 옵션
+ * @returns 파일/디렉토리 정보 배열을 담은 Promise
+ *
+ * @throws {Error} 디렉토리가 존재하지 않거나 접근할 수 없는 경우
+ *
+ * @example
+ * ```typescript
+ * import { ls } from '@repo/node-utils/fs';
+ *
+ * // 현재 디렉토리 내용 조회
+ * const entries = await ls('./');
+ * console.log(entries.map(e => `${e.name} (${e.isDirectory ? 'dir' : 'file'})`));
+ *
+ * // 숨김 파일 포함 조회
+ * const allEntries = await ls('./', { includeHidden: true });
+ * ```
+ */
+export async function ls(
+  dirPath: string,
+  options: LsOptions = {},
+): Promise<LsEntry[]> {
+  // Node.js 전용 구현
+}
+````
+
+**Export 구조:**
+
+```typescript
+// src/fs/index.ts - 카테고리별 export
+export { ls } from "./ls/index.js";
+
+// src/index.ts - 전체 export
+export * from "./fs/index.js";
+```
+
+**Node.js 환경 특화 기능:**
+
+- **node: 프로토콜 사용 필수**: `import { readdir } from "node:fs/promises"`
+- **Node.js 내장 모듈 활용**: fs, path, os, process, util 등
+- **에러 처리**: Node.js 특화 에러 (ENOENT, EACCES 등)
+- **성능 최적화**: Node.js 특화 비동기 패턴 활용
+
+#### Node.js 환경 요구사항
+
+**필수 Node.js 버전:**
+
+- Node.js 22.0.0 이상 (engines 필드에서 강제)
+- node: 프로토콜 지원 필요
+
+**호환성 검증:**
+
+```bash
+# Node.js 버전 확인
+node --version  # v22.x.x 이상이어야 함
+
+# node: 프로토콜 지원 확인
+node -e "import('node:fs').then(() => console.log('✅ node: 프로토콜 지원'))"
+```
+
+#### 지원 카테고리
+
+현재 지원하는 Node.js 유틸리티 카테고리:
+
+- **`fs`**: 파일 시스템 관련 유틸리티 함수
+  - `ls`: 디렉토리 내용 조회 (Unix ls와 유사)
+
+향후 추가 예정 카테고리:
+
+- `os`: 운영체제 정보 관련 함수
+- `process`: 프로세스 제어 관련 함수
+- `network`: 네트워크 관련 함수
+- `crypto`: 암호화 관련 함수 (Node.js 내장 crypto 활용)
+- `stream`: 스트림 처리 관련 함수
+
+#### Node.js 전용 고려사항
+
+**환경 차이점:**
+
+- 브라우저에서 동작하지 않음 (Node.js 전용)
+- 파일 시스템 접근 권한 고려 필요
+- 경로 구분자 OS별 차이 고려 (`path` 모듈 사용 권장)
+
+**보안 고려사항:**
+
+- 파일 시스템 접근 시 경로 검증
+- 사용자 입력 경로 sanitization
+- 권한 오류 적절한 처리
+
+**성능 고려사항:**
+
+- 비동기 API 우선 사용 (`fs/promises`)
+- 스트림 활용으로 메모리 효율성 확보
+- 대량 파일 처리 시 백프레셔 제어
+
+### 3. `@repo/ui` 패키지
 
 UI 컴포넌트 라이브러리에 기여할 때:
 
@@ -1541,7 +1689,7 @@ export const NewComponent: React.FC<NewComponentProps> = ({
 };
 ```
 
-### 2. Apps (web, docs)
+### 4. Apps (web, docs)
 
 애플리케이션에 기여할 때:
 
@@ -1554,13 +1702,15 @@ pnpm turbo dev --filter=docs
 pnpm turbo build --filter=web
 ```
 
-#### 애플리케이션에서 utils-common 패키지 사용
+#### 애플리케이션에서 유틸리티 패키지 사용
+
+**범용 유틸리티 (utils-common) 사용:**
 
 ```typescript
-// 유틸리티 함수 import (Tree-shaking 권장)
+// 브라우저와 Node.js 모두에서 동작하는 유틸리티
 import { isEmptyString } from '@repo/utils-common/string';
 
-// 애플리케이션에서 사용
+// 클라이언트/서버 공통 로직에서 사용
 export default function MyComponent() {
   const handleInput = (value: string) => {
     if (isEmptyString(value)) {
@@ -1578,6 +1728,72 @@ export default function MyComponent() {
 }
 ```
 
+**Node.js 전용 유틸리티 (node-utils) 사용:**
+
+```tsx
+// 서버 컴포넌트나 API 라우트에서만 사용
+import { ls } from "@repo/node-utils/fs";
+
+// Next.js App Router 서버 컴포넌트 예시
+export default async function FileExplorerPage() {
+  // 서버에서만 실행 (파일 시스템 접근)
+  const entries = await ls("./public");
+
+  return (
+    <div>
+      <h1>파일 목록</h1>
+      <ul>
+        {entries.map((entry) => (
+          <li key={entry.name}>
+            {entry.isDirectory ? "📁" : "📄"} {entry.name}
+            <span className="text-sm text-gray-500">
+              ({entry.size} bytes, {entry.modifiedTime.toLocaleDateString()})
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+// API 라우트 예시 (app/api/files/route.ts)
+export async function GET() {
+  try {
+    const entries = await ls("./uploads");
+    return Response.json(entries);
+  } catch (error) {
+    return Response.json(
+      { error: "Failed to read directory" },
+      { status: 500 },
+    );
+  }
+}
+```
+
+**패키지 선택 가이드라인:**
+
+| 상황                      | 사용할 패키지        | 사용 위치                   |
+| ------------------------- | -------------------- | --------------------------- |
+| 문자열 검증, 배열 처리 등 | `@repo/utils-common` | 클라이언트 + 서버           |
+| 파일 읽기, 시스템 정보 등 | `@repo/node-utils`   | 서버 컴포넌트, API 라우트만 |
+| UI 컴포넌트               | `@repo/ui`           | 클라이언트 + 서버           |
+
+**주의사항:**
+
+```typescript
+// ❌ 잘못된 사용 - 클라이언트에서 node-utils 사용 시도
+"use client"; // 클라이언트 컴포넌트에서
+import { ls } from "@repo/node-utils/fs"; // 에러 발생!
+
+// ✅ 올바른 사용 - 서버 컴포넌트에서 node-utils 사용
+// 'use client' 지시어 없음 (서버 컴포넌트)
+import { ls } from "@repo/node-utils/fs"; // 정상 동작
+
+// ✅ 올바른 사용 - 클라이언트에서 utils-common 사용
+("use client");
+import { isEmptyString } from "@repo/utils-common/string"; // 정상 동작
+```
+
 #### 새 페이지/기능 추가 체크리스트
 
 - [ ] 라우팅 설정
@@ -1587,7 +1803,7 @@ export default function MyComponent() {
 - [ ] 에러 상태 처리
 - [ ] 접근성 검사
 
-### 3. 설정 패키지 (eslint-config, typescript-config)
+### 5. 설정 패키지 (eslint-config, typescript-config)
 
 설정 패키지에 기여할 때:
 
@@ -1605,7 +1821,7 @@ pnpm build
 - [ ] 성능에 미치는 영향은?
 - [ ] 문서 업데이트 필요성?
 
-### 4. 프론트엔드 개발 기여
+### 6. 프론트엔드 개발 기여
 
 프론트엔드 관련 작업 시 `@frontend-ecosystem-guru` 에이전트를 적극 활용하세요:
 

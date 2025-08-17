@@ -1,0 +1,59 @@
+{
+  "name": "@repo/node-utils",
+  "version": "0.0.0",
+  "private": false,
+  "type": "module",
+  "description": "Node.js utility functions for the iamhoonse AI ecosystem",
+  "license": "MIT",
+  "author": "hoonse",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./fs": {
+      "types": "./dist/fs.d.ts",
+      "import": "./dist/fs.mjs",
+      "require": "./dist/fs.js"
+    }
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint . --max-warnings 0",
+    "check-types": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^22.15.3",
+    "eslint": "^9.33.0",
+    "tsup": "^8.3.5",
+    "typescript": "5.9.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "keywords": [
+    "node",
+    "nodejs",
+    "utilities",
+    "utils",
+    "filesystem",
+    "typescript",
+    "tree-shaking",
+    "esm",
+    "cjs"
+  ]
+}

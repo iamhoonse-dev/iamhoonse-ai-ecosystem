@@ -1,6 +1,7 @@
 import Image, { type ImageProps } from "next/image";
 import { Button } from "@repo/ui/button";
 import { isEmptyString } from "@repo/utils-common/string";
+import { ls } from "@repo/node-utils/fs";
 import styles from "./page.module.css";
 
 /**
@@ -55,7 +56,10 @@ const ThemeImage = (props: ThemeImageProps) => {
  *
  * @returns JSX 홈 페이지 엘리먼트
  */
-export default function Home() {
+export default async function Home() {
+  // apps/web 디렉토리의 파일 및 디렉토리 목록을 가져옵니다.
+  const entries = await ls("../../apps/web");
+
   return (
     <div className={styles.page}>
       <main className={styles.main}>
@@ -80,6 +84,14 @@ export default function Home() {
             isEmptyString(&#34; a &#34;):{" "}
             {JSON.stringify(isEmptyString("  a "))}
           </li>
+          {entries.map((entry) => (
+            <li key={entry.name}>
+              {entry.isDirectory && <code>DIR</code>}
+              {entry.isFile && <code>FILE</code>}
+              <span>-</span>
+              <span>{entry.name}</span>
+            </li>
+          ))}
         </ol>
 
         <div className={styles.ctas}>
