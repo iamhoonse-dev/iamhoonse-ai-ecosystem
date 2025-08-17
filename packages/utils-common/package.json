@@ -1,0 +1,56 @@
+{
+  "name": "@repo/utils-common",
+  "version": "0.0.0",
+  "private": false,
+  "type": "module",
+  "description": "Common utility functions for the iamhoonse AI ecosystem",
+  "license": "MIT",
+  "author": "hoonse",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./string": {
+      "types": "./dist/string.d.ts",
+      "import": "./dist/string.mjs",
+      "require": "./dist/string.js"
+    }
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint . --max-warnings 0",
+    "check-types": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^22.15.3",
+    "eslint": "^9.33.0",
+    "tsup": "^8.3.5",
+    "typescript": "5.9.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "keywords": [
+    "utilities",
+    "utils",
+    "typescript",
+    "tree-shaking",
+    "esm",
+    "cjs"
+  ]
+}
