@@ -22,6 +22,7 @@ iamhoonse-ai-ecosystem/
 │   └── web/           # 메인 웹 애플리케이션 (Next.js)
 ├── packages/
 │   ├── ui/            # 공유 React 컴포넌트 라이브러리
+│   ├── react-utils/   # React 커스텀 훅 및 유틸리티 패키지
 │   ├── utils-common/  # 공통 유틸리티 함수 패키지
 │   ├── node-utils/    # Node.js 전용 유틸리티 함수 패키지
 │   ├── browser-utils/ # 브라우저 전용 유틸리티 함수 패키지
@@ -184,6 +185,52 @@ git commit -m "생성된-커밋-메시지"
 - 공유 React 컴포넌트 라이브러리
 - TypeScript로 작성된 재사용 가능한 UI 컴포넌트
 
+#### `@repo/react-utils`
+
+- **React 전용** 커스텀 훅 및 유틸리티 라이브러리
+- TypeScript로 작성된 React 개발에 특화된 유틸리티 함수
+- **React 19+ 환경에서만 동작** (peerDependencies 의존성)
+- Tree-shaking 지원으로 필요한 기능만 선택적 임포트
+- ESM/CJS 모듈 형식 지원
+- 카테고리별 함수 분리 (`hooks` 카테고리)
+
+**주요 기능:**
+
+- `useInterval`: 일시정지/재개가 가능한 interval 커스텀 훅
+  - 컴포넌트 라이프사이클에 안전하게 통합된 interval 관리
+  - delay 값이 `null`일 때 자동 일시정지
+  - 메모리 누수 방지를 위한 자동 정리
+
+**사용 예시:**
+
+```typescript
+// 카테고리별 임포트 (권장 - Tree-shaking 최적화)
+import { useInterval } from "@repo/react-utils/hooks";
+
+// 전체 임포트도 지원
+import { useInterval } from "@repo/react-utils";
+
+// 사용 예시
+function Timer() {
+  const [count, setCount] = useState(0);
+  const [isRunning, setIsRunning] = useState(true);
+
+  // 1초마다 카운터 증가, isRunning이 false일 때 일시정지
+  useInterval(() => {
+    setCount(count => count + 1);
+  }, isRunning ? 1000 : null);
+
+  return (
+    <div>
+      <p>카운트: {count}</p>
+      <button onClick={() => setIsRunning(!isRunning)}>
+        {isRunning ? '일시정지' : '재개'}
+      </button>
+    </div>
+  );
+}
+```
+
 #### `@repo/eslint-config`
 
 - 프로젝트 전체에서 사용하는 ESLint 설정
@@ -259,13 +306,14 @@ entries.forEach((entry) => {
 
 **유틸리티 패키지 비교:**
 
-| 특징             | utils-common        | node-utils          | browser-utils    |
-| ---------------- | ------------------- | ------------------- | ---------------- |
-| **실행 환경**    | 브라우저 + Node.js  | Node.js 전용        | 브라우저 전용    |
-| **Node.js 버전** | 범용                | 22+ 필수            | N/A              |
-| **API 접근**     | Web API + 공통 기능 | Node.js 내장 모듈   | Browser API      |
-| **용도**         | 범용 유틸리티       | 서버사이드 전용     | 클라이언트 전용  |
-| **예시 기능**    | 문자열, 배열 처리   | 파일시스템, OS 기능 | BOM, 메모리 정보 |
+| 특징             | utils-common        | react-utils         | node-utils          | browser-utils    |
+| ---------------- | ------------------- | ------------------- | ------------------- | ---------------- |
+| **실행 환경**    | 브라우저 + Node.js  | React 19+ 전용      | Node.js 전용        | 브라우저 전용    |
+| **React 의존성** | 없음                | React 19+ 필수      | 없음                | 없음             |
+| **Node.js 버전** | 범용                | 22+ (개발 환경)     | 22+ 필수            | N/A              |
+| **API 접근**     | Web API + 공통 기능 | React Hooks API     | Node.js 내장 모듈   | Browser API      |
+| **용도**         | 범용 유틸리티       | React 컴포넌트 전용 | 서버사이드 전용     | 클라이언트 전용  |
+| **예시 기능**    | 문자열, 배열 처리   | 커스텀 훅           | 파일시스템, OS 기능 | BOM, 메모리 정보 |
 
 #### `@repo/browser-utils`
 
@@ -303,9 +351,10 @@ if (memInfo.isSupported) {
 }
 ```
 
-**browser-utils와 다른 패키지와의 차이점:**
+**각 패키지의 특징 및 차이점:**
 
 - **utils-common**: 브라우저와 Node.js 모두에서 동작하는 범용 유틸리티
+- **react-utils**: React 컴포넌트에서만 사용 가능한 커스텀 훅 및 React 전용 유틸리티
 - **node-utils**: Node.js 환경에서만 동작하는 서버사이드 전용 유틸리티
 - **browser-utils**: 브라우저 환경에서만 동작하는 클라이언트사이드 전용 유틸리티
 
