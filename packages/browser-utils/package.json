@@ -1,0 +1,59 @@
+{
+  "name": "@repo/browser-utils",
+  "version": "0.0.0",
+  "private": false,
+  "type": "module",
+  "description": "Browser utility functions for the iamhoonse AI ecosystem",
+  "license": "MIT",
+  "author": "hoonse",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./bom": {
+      "types": "./dist/bom.d.ts",
+      "import": "./dist/bom.mjs",
+      "require": "./dist/bom.js"
+    }
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint . --max-warnings 0",
+    "check-types": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^22.15.3",
+    "eslint": "^9.33.0",
+    "tsup": "^8.3.5",
+    "typescript": "5.9.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "keywords": [
+    "browser",
+    "utilities",
+    "utils",
+    "bom",
+    "typescript",
+    "tree-shaking",
+    "esm",
+    "cjs",
+    "memory"
+  ]
+}

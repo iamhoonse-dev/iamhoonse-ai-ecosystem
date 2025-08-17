@@ -3,6 +3,7 @@ import { Button } from "@repo/ui/button";
 import { isEmptyString } from "@repo/utils-common/string";
 import { ls } from "@repo/node-utils/fs";
 import styles from "./page.module.css";
+import TestBrowserUtils from "../containers/TestBrowserUtils";
 
 /**
  * 테마별 이미지 컴포넌트의 속성 인터페이스
@@ -72,6 +73,7 @@ export default async function Home() {
           height={38}
           priority
         />
+        <TestBrowserUtils />
         <ol>
           <li>
             Get started by editing <code>apps/web/app/page.tsx</code>

@@ -24,6 +24,7 @@ iamhoonse-ai-ecosystem/
 │   ├── ui/            # 공유 React 컴포넌트 라이브러리
 │   ├── utils-common/  # 공통 유틸리티 함수 패키지
 │   ├── node-utils/    # Node.js 전용 유틸리티 함수 패키지
+│   ├── browser-utils/ # 브라우저 전용 유틸리티 함수 패키지
 │   ├── eslint-config/ # ESLint 설정 패키지
 │   └── typescript-config/ # TypeScript 설정 패키지
 └── .claude/
@@ -256,15 +257,57 @@ entries.forEach((entry) => {
 });
 ```
 
-**utils-common과의 차이점:**
+**유틸리티 패키지 비교:**
 
-| 특징             | utils-common        | node-utils          |
-| ---------------- | ------------------- | ------------------- |
-| **실행 환경**    | 브라우저 + Node.js  | Node.js 전용        |
-| **Node.js 버전** | 범용                | 22+ 필수            |
-| **API 접근**     | Web API + 공통 기능 | Node.js 내장 모듈   |
-| **용도**         | 범용 유틸리티       | 서버사이드 전용     |
-| **예시 기능**    | 문자열, 배열 처리   | 파일시스템, OS 기능 |
+| 특징             | utils-common        | node-utils          | browser-utils    |
+| ---------------- | ------------------- | ------------------- | ---------------- |
+| **실행 환경**    | 브라우저 + Node.js  | Node.js 전용        | 브라우저 전용    |
+| **Node.js 버전** | 범용                | 22+ 필수            | N/A              |
+| **API 접근**     | Web API + 공통 기능 | Node.js 내장 모듈   | Browser API      |
+| **용도**         | 범용 유틸리티       | 서버사이드 전용     | 클라이언트 전용  |
+| **예시 기능**    | 문자열, 배열 처리   | 파일시스템, OS 기능 | BOM, 메모리 정보 |
+
+#### `@repo/browser-utils`
+
+- **브라우저 전용** 유틸리티 함수 라이브러리
+- TypeScript로 작성된 클라이언트사이드 전용 유틸리티 함수
+- **브라우저 환경에서만 동작** (window 객체 의존)
+- Tree-shaking 지원으로 필요한 기능만 선택적 임포트
+- ESM/CJS/UMD 모듈 형식 지원
+- 카테고리별 함수 분리 (`bom` 카테고리)
+
+**주요 기능:**
+
+- `getMemoryInfo`: 브라우저 메모리 정보 조회 함수
+  - Performance API와 Navigator API를 활용한 메모리 상태 조회
+  - JS 힙 크기, 디바이스 메모리 용량 등의 정보 제공
+  - 브라우저 호환성 자동 감지
+  - Chrome/Chromium 기반 브라우저에서 최적화
+
+**사용 예시:**
+
+```typescript
+// 카테고리별 임포트 (권장 - Tree-shaking 최적화)
+import { getMemoryInfo } from "@repo/browser-utils/bom";
+
+// 사용
+const memInfo = getMemoryInfo();
+
+if (memInfo.isSupported) {
+  console.log(`사용 중인 JS 힙 크기: ${memInfo.usedJSHeapSize} bytes`);
+  console.log(`총 JS 힙 크기: ${memInfo.totalJSHeapSize} bytes`);
+  console.log(`디바이스 메모리: ${memInfo.deviceMemory} GB`);
+  console.log(`정보 출처: ${memInfo.source}`);
+} else {
+  console.log("메모리 정보를 사용할 수 없습니다.");
+}
+```
+
+**browser-utils와 다른 패키지와의 차이점:**
+
+- **utils-common**: 브라우저와 Node.js 모두에서 동작하는 범용 유틸리티
+- **node-utils**: Node.js 환경에서만 동작하는 서버사이드 전용 유틸리티
+- **browser-utils**: 브라우저 환경에서만 동작하는 클라이언트사이드 전용 유틸리티
 
 #### `@repo/typescript-config`
 
