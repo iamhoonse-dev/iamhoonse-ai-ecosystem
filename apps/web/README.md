@@ -58,6 +58,8 @@ apps/web/
 │   ├── globals.css     # 전역 스타일
 │   ├── layout.tsx      # 루트 레이아웃
 │   └── page.tsx        # 홈 페이지
+├── containers/          # 컴포넌트 컨테이너
+│   └── TestBrowserUtils/ # 브라우저 유틸리티 테스트 컴포넌트
 ├── public/             # 정적 파일
 └── package.json        # 패키지 설정
 ```
@@ -68,6 +70,7 @@ apps/web/
 - 🎯 **타입 안전**: TypeScript로 작성된 완전 타입 안전한 코드
 - 🧩 **모듈화**: 공유 컴포넌트 라이브러리 활용
 - 📱 **반응형**: 모바일 퍼스트 디자인
+- 🧪 **통합 테스트**: 내부 패키지들의 실제 동작 확인 (utils-common, node-utils, browser-utils)
 
 ## 개발 가이드라인
 
@@ -79,19 +82,38 @@ apps/web/
 
 ### 페이지 및 컴포넌트 작성
 
-```typescript
+```tsx
 // app/example/page.tsx
-import { Button } from '@repo/ui/button'
+import { Button } from "@repo/ui/button";
+import { isEmptyString } from "@repo/utils-common/string";
+import { getMemoryInfo } from "@repo/browser-utils/bom";
 
 export default function ExamplePage() {
+  const memoryInfo = getMemoryInfo();
+
   return (
     <div>
       <h1>예제 페이지</h1>
       <Button>클릭하세요</Button>
+      <p>문자열 검사: {isEmptyString("") ? "빈 문자열" : "일반 문자열"}</p>
+      {memoryInfo.isSupported && (
+        <p>메모리 사용량: {memoryInfo.usedJSHeapSize} bytes</p>
+      )}
     </div>
-  )
+  );
 }
 ```
+
+### 내부 패키지 활용
+
+이 웹 애플리케이션은 다음 내부 패키지들을 활용하여 기능을 구현합니다:
+
+- **`@repo/utils-common`**: 범용 유틸리티 함수 (브라우저 + Node.js 환경)
+- **`@repo/node-utils`**: Node.js 전용 유틸리티 함수 (서버 컴포넌트에서 사용)
+- **`@repo/browser-utils`**: 브라우저 전용 유틸리티 함수 (클라이언트 컴포넌트에서 사용)
+- **`@repo/ui`**: 공유 UI 컴포넌트 라이브러리
+
+실제 사용 예제는 홈페이지(`app/page.tsx`)와 테스트 컴포넌트(`containers/TestBrowserUtils`)에서 확인할 수 있습니다.
 
 ## 배포
 
