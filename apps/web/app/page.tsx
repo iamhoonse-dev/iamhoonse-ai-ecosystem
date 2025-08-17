@@ -4,6 +4,7 @@ import { isEmptyString } from "@repo/utils-common/string";
 import { ls } from "@repo/node-utils/fs";
 import styles from "./page.module.css";
 import TestBrowserUtils from "../containers/TestBrowserUtils";
+import TestReactUtils from "../containers/TestReactUtils";
 
 /**
  * 테마별 이미지 컴포넌트의 속성 인터페이스
@@ -73,6 +74,7 @@ export default async function Home() {
           height={38}
           priority
         />
+        <TestReactUtils />
         <TestBrowserUtils />
         <ol>
           <li>

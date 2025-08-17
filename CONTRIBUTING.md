@@ -137,7 +137,10 @@ iamhoonse-ai-ecosystem/
 │   └── web/                      # 메인 웹 앱 (Next.js)
 ├── packages/                      # 공유 패키지들
 │   ├── ui/                       # React 컴포넌트 라이브러리
+│   ├── react-utils/              # React 커스텀 훅 및 유틸리티 라이브러리
 │   ├── utils-common/             # 공통 유틸리티 함수 라이브러리
+│   ├── node-utils/               # Node.js 전용 유틸리티 라이브러리
+│   ├── browser-utils/            # 브라우저 전용 유틸리티 라이브러리
 │   ├── eslint-config/            # ESLint 설정
 │   └── typescript-config/        # TypeScript 설정
 ├── .claude/                       # Claude Code 설정
@@ -1621,6 +1624,176 @@ node -e "import('node:fs').then(() => console.log('✅ node: 프로토콜 지원
 - 스트림 활용으로 메모리 효율성 확보
 - 대량 파일 처리 시 백프레셔 제어
 
+### 2. `@repo/react-utils` 패키지
+
+**React 전용** 커스텀 훅 및 유틸리티 라이브러리에 기여할 때:
+
+```bash
+# 개발 환경 실행
+cd packages/react-utils
+pnpm dev
+
+# React 유틸리티 함수 빌드
+pnpm build
+
+# React 유틸리티 함수 테스트 (추가될 예정)
+pnpm test
+```
+
+#### React 커스텀 훅 추가 체크리스트
+
+- [ ] **React 19+ 호환성** 확인
+- [ ] TypeScript 인터페이스 정의
+- [ ] JSDoc 문서 작성 (React 전용임을 명시)
+- [ ] Tree-shaking을 위한 카테고리별 분류
+- [ ] React 환경에서의 단위 테스트 작성 (추후)
+- [ ] React 컴포넌트에서의 사용 예제 문서화
+- [ ] 메모리 누수 방지 및 정리 로직 구현
+- [ ] **peerDependencies 의존성 확인** (React, ReactDOM 19+)
+
+#### React 커스텀 훅 구조 가이드라인
+
+**디렉토리 구조:**
+
+```
+src/
+├── <category>/          # 카테고리별 분류 (예: hooks, components, utils)
+│   ├── index.ts        # 카테고리 내 함수들 export
+│   └── <hook-name>/
+│       └── index.ts    # 개별 훅 구현
+└── index.ts           # 전체 함수들 export
+```
+
+**커스텀 훅 작성 예시:**
+
+````typescript
+// src/hooks/useInterval/index.ts
+import { useEffect, useRef } from "react";
+
+/**
+ * 일시정지/재개가 가능한 interval 커스텀 훅 (React 전용)
+ *
+ * React 컴포넌트 라이프사이클에 안전하게 통합되어 메모리 누수를 방지합니다.
+ * delay가 null일 때 자동으로 interval이 일시정지됩니다.
+ *
+ * @param callback - 각 interval마다 호출될 함수
+ * @param delay - 밀리초 단위 지연시간, null일 경우 일시정지
+ *
+ * @example
+ * ```tsx
+ * import { useInterval } from '@repo/react-utils/hooks';
+ *
+ * function Timer() {
+ *   const [count, setCount] = useState(0);
+ *   const [isRunning, setIsRunning] = useState(true);
+ *
+ *   useInterval(() => {
+ *     setCount(count => count + 1);
+ *   }, isRunning ? 1000 : null);
+ *
+ *   return (
+ *     <div>
+ *       <p>카운트: {count}</p>
+ *       <button onClick={() => setIsRunning(!isRunning)}>
+ *         {isRunning ? '일시정지' : '재개'}
+ *       </button>
+ *     </div>
+ *   );
+ * }
+ * ```
+ */
+export function useInterval(callback: () => void, delay: number | null): void {
+  const savedCallback = useRef<() => void>();
+
+  // 최신 callback 저장
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  // interval 설정
+  useEffect(() => {
+    function tick() {
+      savedCallback.current?.();
+    }
+
+    if (delay !== null) {
+      const id = setInterval(tick, delay);
+      return () => clearInterval(id);
+    }
+  }, [delay]);
+}
+````
+
+**Export 구조:**
+
+```typescript
+// src/hooks/index.ts - 카테고리별 export
+export { useInterval } from "./useInterval/index.js";
+
+// src/index.ts - 전체 export
+export * from "./hooks/index.js";
+```
+
+**React 전용 고려사항:**
+
+- **peerDependencies**: React와 ReactDOM을 외부 의존성으로 설정
+- **React 19+ 지원**: 최신 React API와 호환성 확보
+- **메모리 누수 방지**: useEffect cleanup 함수 적절한 구현
+- **성능 최적화**: useMemo, useCallback 적절한 사용
+- **타입 안전성**: React 관련 타입 정확한 정의
+
+#### React 환경 요구사항
+
+**필수 React 버전:**
+
+- React 19.0.0 이상 (peerDependencies에서 강제)
+- ReactDOM 19.0.0 이상 필요
+
+**호환성 검증:**
+
+```bash
+# React 버전 확인
+npm list react react-dom
+
+# React 19+ 지원 확인
+node -e "import('react').then(r => console.log('React 버전:', r.version || 'Unknown'))"
+```
+
+#### 지원 카테고리
+
+현재 지원하는 React 유틸리티 카테고리:
+
+- **`hooks`**: React 커스텀 훅
+  - `useInterval`: 일시정지/재개가 가능한 interval 훅
+
+향후 추가 예정 카테고리:
+
+- `components`: 헬퍼 컴포넌트 (Higher-Order Components, Render Props 등)
+- `context`: Context API 관련 유틸리티
+- `performance`: 성능 최적화 관련 훅 (useDebounce, useThrottle 등)
+- `state`: 상태 관리 관련 훅
+- `lifecycle`: 컴포넌트 라이프사이클 관련 훅
+
+#### React 패키지 특화 고려사항
+
+**React 생태계 통합:**
+
+- React 컴포넌트에서만 사용 가능
+- React 훅 규칙 준수 (Rules of Hooks)
+- React DevTools 지원 (displayName 설정 등)
+
+**성능 최적화:**
+
+- 불필요한 리렌더링 방지
+- 메모이제이션 적절한 활용
+- 의존성 배열 최적화
+
+**테스트 전략:**
+
+- React Testing Library 활용
+- 커스텀 훅 테스트를 위한 renderHook 사용
+- 컴포넌트 라이프사이클 시뮬레이션
+
 ### 3. `@repo/ui` 패키지
 
 UI 컴포넌트 라이브러리에 기여할 때:
@@ -1704,6 +1877,38 @@ pnpm turbo build --filter=web
 
 #### 애플리케이션에서 유틸리티 패키지 사용
 
+**React 전용 유틸리티 (react-utils) 사용:**
+
+```tsx
+// React 컴포넌트에서만 사용 가능한 커스텀 훅
+import { useInterval } from "@repo/react-utils/hooks";
+
+// 클라이언트 컴포넌트에서 사용
+("use client");
+
+export default function Timer() {
+  const [count, setCount] = useState(0);
+  const [isRunning, setIsRunning] = useState(true);
+
+  // 커스텀 훅 사용 - React 컴포넌트에서만 가능
+  useInterval(
+    () => {
+      setCount((count) => count + 1);
+    },
+    isRunning ? 1000 : null,
+  );
+
+  return (
+    <div>
+      <p>타이머: {count}초</p>
+      <button onClick={() => setIsRunning(!isRunning)}>
+        {isRunning ? "일시정지" : "재개"}
+      </button>
+    </div>
+  );
+}
+```
+
 **범용 유틸리티 (utils-common) 사용:**
 
 ```typescript
@@ -1772,18 +1977,28 @@ export async function GET() {
 
 **패키지 선택 가이드라인:**
 
-| 상황                      | 사용할 패키지        | 사용 위치                   |
-| ------------------------- | -------------------- | --------------------------- |
-| 문자열 검증, 배열 처리 등 | `@repo/utils-common` | 클라이언트 + 서버           |
-| 파일 읽기, 시스템 정보 등 | `@repo/node-utils`   | 서버 컴포넌트, API 라우트만 |
-| UI 컴포넌트               | `@repo/ui`           | 클라이언트 + 서버           |
+| 상황                      | 사용할 패키지         | 사용 위치                   |
+| ------------------------- | --------------------- | --------------------------- |
+| 커스텀 훅, React 유틸리티 | `@repo/react-utils`   | React 컴포넌트만            |
+| 문자열 검증, 배열 처리 등 | `@repo/utils-common`  | 클라이언트 + 서버           |
+| 파일 읽기, 시스템 정보 등 | `@repo/node-utils`    | 서버 컴포넌트, API 라우트만 |
+| 브라우저 API, 메모리 정보 | `@repo/browser-utils` | 클라이언트만                |
+| UI 컴포넌트               | `@repo/ui`            | 클라이언트 + 서버           |
 
 **주의사항:**
 
 ```typescript
+// ❌ 잘못된 사용 - 비React 환경에서 react-utils 사용 시도
+// 일반 TypeScript/JavaScript 함수에서
+import { useInterval } from "@repo/react-utils/hooks"; // 에러 발생!
+
 // ❌ 잘못된 사용 - 클라이언트에서 node-utils 사용 시도
-"use client"; // 클라이언트 컴포넌트에서
+("use client"); // 클라이언트 컴포넌트에서
 import { ls } from "@repo/node-utils/fs"; // 에러 발생!
+
+// ✅ 올바른 사용 - React 컴포넌트에서 react-utils 사용
+("use client"); // 클라이언트 컴포넌트에서
+import { useInterval } from "@repo/react-utils/hooks"; // 정상 동작
 
 // ✅ 올바른 사용 - 서버 컴포넌트에서 node-utils 사용
 // 'use client' 지시어 없음 (서버 컴포넌트)
