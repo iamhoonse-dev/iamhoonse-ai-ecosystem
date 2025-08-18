@@ -23,7 +23,7 @@ iamhoonse-ai-ecosystem/
 ├── packages/
 │   ├── react-ui/      # React UI 컴포넌트 라이브러리
 │   ├── react-utils/   # React 커스텀 훅 및 유틸리티 패키지 (구성 최적화 완료)
-│   ├── utils-common/  # 공통 유틸리티 함수 패키지
+│   ├── common-utils/  # 공통 유틸리티 함수 패키지
 │   ├── node-utils/    # Node.js 전용 유틸리티 함수 패키지
 │   └── browser-utils/ # 브라우저 전용 유틸리티 함수 패키지
 ├── configs/
@@ -330,7 +330,7 @@ function Timer() {
 - Next.js와 Prettier 설정 포함
 - `configs/eslint-config/` 디렉토리에 위치
 
-#### `@repo/utils-common`
+#### `@repo/common-utils`
 
 - 공통 유틸리티 함수 라이브러리
 - TypeScript로 작성된 재사용 가능한 유틸리티 함수
@@ -347,10 +347,10 @@ function Timer() {
 
 ```typescript
 // 전체 임포트
-import { isEmptyString } from "@repo/utils-common";
+import { isEmptyString } from "@repo/common-utils";
 
 // 카테고리별 임포트 (권장 - Tree-shaking 최적화)
-import { isEmptyString } from "@repo/utils-common/string";
+import { isEmptyString } from "@repo/common-utils/string";
 
 // 사용
 isEmptyString(""); // true
@@ -400,7 +400,7 @@ entries.forEach((entry) => {
 
 **패키지 비교표:**
 
-| 특징                | utils-common        | react-utils            | react-ui               | node-utils          | browser-utils    |
+| 특징                | common-utils        | react-utils            | react-ui               | node-utils          | browser-utils    |
 | ------------------- | ------------------- | ---------------------- | ---------------------- | ------------------- | ---------------- |
 | **실행 환경**       | 브라우저 + Node.js  | React 19+ 전용         | React 19+ 전용         | Node.js 전용        | 브라우저 전용    |
 | **React 의존성**    | 없음                | React 19+ 필수         | React 19+ 필수         | 없음                | 없음             |
@@ -449,7 +449,7 @@ if (memInfo.isSupported) {
 
 **각 패키지의 특징 및 차이점:**
 
-- **utils-common**: 브라우저와 Node.js 모두에서 동작하는 범용 유틸리티
+- **common-utils**: 브라우저와 Node.js 모두에서 동작하는 범용 유틸리티
 - **react-utils**: React 컴포넌트에서만 사용 가능한 커스텀 훅 및 React 전용 유틸리티
 - **react-ui**: React 애플리케이션에서 사용하는 UI 컴포넌트 라이브러리 (Button, Input 등)
 - **node-utils**: Node.js 환경에서만 동작하는 서버사이드 전용 유틸리티
