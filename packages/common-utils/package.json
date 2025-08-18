@@ -1,5 +1,5 @@
 {
-  "name": "@repo/utils-common",
+  "name": "@repo/common-utils",
   "version": "0.0.0",
   "private": false,
   "type": "module",
