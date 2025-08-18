@@ -23,7 +23,7 @@ iamhoonse-ai-ecosystem/
 ├── packages/
 │   ├── ui/            # 공유 React 컴포넌트 라이브러리
 │   ├── react-ui/      # React UI 컴포넌트 라이브러리 (새로운 패키지)
-│   ├── react-utils/   # React 커스텀 훅 및 유틸리티 패키지
+│   ├── react-utils/   # React 커스텀 훅 및 유틸리티 패키지 (구성 최적화 완료)
 │   ├── utils-common/  # 공통 유틸리티 함수 패키지
 │   ├── node-utils/    # Node.js 전용 유틸리티 함수 패키지
 │   ├── browser-utils/ # 브라우저 전용 유틸리티 함수 패키지
@@ -33,6 +33,18 @@ iamhoonse-ai-ecosystem/
     ├── agents/        # Claude Code AI 에이전트
     └── commands/      # Slash 커맨드 정의
 ```
+
+## 최근 개선사항
+
+### 패키지 설정 최적화 (2025년 1월)
+
+**@repo/react-utils 패키지 설정 일관성 개선:**
+
+- **TypeScript 설정 통일**: `tsconfig.json`이 `@repo/typescript-config/base.json` 대신 `@repo/typescript-config/react-library.json`을 상속하도록 수정하여 `@repo/react-ui` 패키지와 설정 일관성 확보
+- **테스트 파일 제외 규칙 보완**: `.tsx` 확장자 테스트 파일(`.test.tsx`, `.spec.tsx`)을 TypeScript 컴파일 대상에서 제외하도록 설정 추가
+- **번들링 최적화**: `tsup.config.ts`의 external 의존성에 `react/jsx-runtime` 추가로 React JSX 런타임의 외부 처리 최적화
+
+이러한 설정 개선으로 React 관련 패키지들(`react-ui`, `react-utils`) 간의 구성 일관성이 향상되었고, 더 안정적인 빌드 환경을 제공합니다.
 
 ## Claude Code 통합 기능
 
@@ -255,6 +267,7 @@ function AdvancedApp() {
 - Tree-shaking 지원으로 필요한 기능만 선택적 임포트
 - ESM/CJS 모듈 형식 지원
 - 카테고리별 함수 분리 (`hooks` 카테고리)
+- **설정 일관성**: `@repo/react-ui`와 동일한 TypeScript 설정 (`react-library.json`) 사용
 
 **주요 기능:**
 
@@ -262,6 +275,13 @@ function AdvancedApp() {
   - 컴포넌트 라이프사이클에 안전하게 통합된 interval 관리
   - delay 값이 `null`일 때 자동 일시정지
   - 메모리 누수 방지를 위한 자동 정리
+
+**기술적 특징:**
+
+- **React 19+ JSX 런타임 지원**: 최신 React JSX 변환 런타임 완전 지원
+- **TypeScript 설정 일관성**: `@repo/react-ui`와 동일한 React 라이브러리 전용 TypeScript 설정 적용
+- **테스트 파일 분리**: `.tsx` 확장자 테스트 파일이 프로덕션 빌드에서 완전히 제외됨
+- **번들 크기 최적화**: React 관련 모든 런타임(`react`, `react-dom`, `react/jsx-runtime`)이 외부 의존성으로 처리되어 최적화된 번들 크기 제공
 
 **사용 예시:**
 
@@ -371,14 +391,16 @@ entries.forEach((entry) => {
 
 **패키지 비교표:**
 
-| 특징             | utils-common        | react-utils         | react-ui             | node-utils          | browser-utils    |
-| ---------------- | ------------------- | ------------------- | -------------------- | ------------------- | ---------------- |
-| **실행 환경**    | 브라우저 + Node.js  | React 19+ 전용      | React 19+ 전용       | Node.js 전용        | 브라우저 전용    |
-| **React 의존성** | 없음                | React 19+ 필수      | React 19+ 필수       | 없음                | 없음             |
-| **Node.js 버전** | 범용                | 22+ (개발 환경)     | 22+ (개발 환경)      | 22+ 필수            | N/A              |
-| **API 접근**     | Web API + 공통 기능 | React Hooks API     | React Components API | Node.js 내장 모듈   | Browser API      |
-| **용도**         | 범용 유틸리티       | React 컴포넌트 전용 | React UI 컴포넌트    | 서버사이드 전용     | 클라이언트 전용  |
-| **예시 기능**    | 문자열, 배열 처리   | 커스텀 훅           | Button, Input 등     | 파일시스템, OS 기능 | BOM, 메모리 정보 |
+| 특징                | utils-common        | react-utils            | react-ui               | node-utils          | browser-utils    |
+| ------------------- | ------------------- | ---------------------- | ---------------------- | ------------------- | ---------------- |
+| **실행 환경**       | 브라우저 + Node.js  | React 19+ 전용         | React 19+ 전용         | Node.js 전용        | 브라우저 전용    |
+| **React 의존성**    | 없음                | React 19+ 필수         | React 19+ 필수         | 없음                | 없음             |
+| **Node.js 버전**    | 범용                | 22+ (개발 환경)        | 22+ (개발 환경)        | 22+ 필수            | N/A              |
+| **TypeScript 설정** | base.json           | **react-library.json** | **react-library.json** | base.json           | base.json        |
+| **JSX 런타임**      | N/A                 | **react-jsx 완전지원** | **react-jsx 완전지원** | N/A                 | N/A              |
+| **API 접근**        | Web API + 공통 기능 | React Hooks API        | React Components API   | Node.js 내장 모듈   | Browser API      |
+| **용도**            | 범용 유틸리티       | React 컴포넌트 전용    | React UI 컴포넌트      | 서버사이드 전용     | 클라이언트 전용  |
+| **예시 기능**       | 문자열, 배열 처리   | 커스텀 훅              | Button, Input 등       | 파일시스템, OS 기능 | BOM, 메모리 정보 |
 
 #### `@repo/browser-utils`
 
@@ -427,7 +449,11 @@ if (memInfo.isSupported) {
 #### `@repo/typescript-config`
 
 - 공유 TypeScript 설정
-- 다양한 환경별 설정 파일 제공
+- 다양한 환경별 설정 파일 제공:
+  - `base.json`: 기본 TypeScript 설정 (범용 패키지용)
+  - `nextjs.json`: Next.js 애플리케이션 전용 설정
+  - `react-library.json`: **React 라이브러리 전용 설정** (JSX 지원 포함)
+- React 패키지들(`react-ui`, `react-utils`)은 `react-library.json`을 상속하여 일관된 React 개발 환경 제공
 
 ## 기여하기
 

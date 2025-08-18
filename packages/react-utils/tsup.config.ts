@@ -11,7 +11,7 @@ export default defineConfig([
     splitting: false,
     treeshake: true,
     outDir: "dist",
-    external: ["react", "react-dom"],
+    external: ["react", "react-dom", "react/jsx-runtime"],
     outExtension({ format }) {
       return {
         js: format === "cjs" ? ".js" : ".mjs",
@@ -27,7 +27,7 @@ export default defineConfig([
     splitting: false,
     treeshake: true,
     outDir: "dist",
-    external: ["react", "react-dom"],
+    external: ["react", "react-dom", "react/jsx-runtime"],
     outExtension({ format }) {
       return {
         js: format === "cjs" ? ".js" : ".mjs",
