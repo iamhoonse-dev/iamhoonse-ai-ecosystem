@@ -137,6 +137,7 @@ iamhoonse-ai-ecosystem/
 │   └── web/                      # 메인 웹 앱 (Next.js)
 ├── packages/                      # 공유 패키지들
 │   ├── ui/                       # React 컴포넌트 라이브러리
+│   ├── react-ui/                 # React UI 컴포넌트 라이브러리 (새로운 패키지)
 │   ├── react-utils/              # React 커스텀 훅 및 유틸리티 라이브러리
 │   ├── utils-common/             # 공통 유틸리티 함수 라이브러리
 │   ├── node-utils/               # Node.js 전용 유틸리티 라이브러리
@@ -1794,7 +1795,203 @@ node -e "import('react').then(r => console.log('React 버전:', r.version || 'Un
 - 커스텀 훅 테스트를 위한 renderHook 사용
 - 컴포넌트 라이프사이클 시뮬레이션
 
-### 3. `@repo/ui` 패키지
+### 3. `@repo/react-ui` 패키지
+
+**React 전용** UI 컴포넌트 라이브러리에 기여할 때:
+
+```bash
+# 개발 환경 실행
+cd packages/react-ui
+pnpm dev
+
+# React UI 컴포넌트 빌드
+pnpm build
+
+# React UI 컴포넌트 테스트 (추가될 예정)
+pnpm test
+```
+
+#### React UI 컴포넌트 추가 체크리스트
+
+- [ ] **React 19+ 호환성** 확인
+- [ ] TypeScript 인터페이스 정의
+- [ ] JSDoc 문서 작성 (React 전용임을 명시)
+- [ ] Tree-shaking을 위한 카테고리별 분류
+- [ ] React 환경에서의 단위 테스트 작성 (추후)
+- [ ] React 컴포넌트에서의 사용 예제 문서화
+- [ ] 접근성(a11y) 속성 구현
+- [ ] forwardRef를 통한 ref 전달 지원
+- [ ] **peerDependencies 의존성 확인** (React, ReactDOM 19+)
+
+#### React UI 컴포넌트 구조 가이드라인
+
+**디렉토리 구조:**
+
+```
+src/
+├── <category>/          # 카테고리별 분류 (예: common, form, layout)
+│   ├── index.ts        # 카테고리 내 컴포넌트들 export
+│   └── <Component>/
+│       └── index.tsx   # 개별 컴포넌트 구현
+└── index.ts           # 전체 컴포넌트들 export
+```
+
+**UI 컴포넌트 작성 예시:**
+
+````tsx
+// src/common/Button/index.tsx
+import { forwardRef, type ButtonHTMLAttributes } from "react";
+
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  /** 버튼의 시각적 스타일 변형 */
+  variant?: "primary" | "secondary" | "outline";
+  /** 버튼의 크기 */
+  size?: "sm" | "md" | "lg";
+}
+
+/**
+ * 다양한 variant와 size를 지원하는 버튼 컴포넌트 (React 전용)
+ *
+ * HTML button 요소를 확장하여 일관된 스타일링과 접근성을 제공합니다.
+ * forwardRef를 사용하여 ref 전달을 지원하고, 모든 HTML button 속성을 상속받습니다.
+ *
+ * @param props.variant - 버튼 스타일 변형 (기본값: "primary")
+ * @param props.size - 버튼 크기 (기본값: "md")
+ * @param props.className - 추가 CSS 클래스명
+ * @param props.children - 버튼 내용
+ * @param ref - button 요소에 전달될 ref
+ *
+ * @example
+ * ```tsx
+ * import { Button } from '@repo/react-ui/common';
+ *
+ * function MyComponent() {
+ *   const buttonRef = useRef<HTMLButtonElement>(null);
+ *
+ *   return (
+ *     <div>
+ *       <Button variant="primary" size="md">
+ *         기본 버튼
+ *       </Button>
+ *       <Button
+ *         ref={buttonRef}
+ *         variant="outline"
+ *         onClick={() => alert('클릭!')}
+ *         disabled={false}
+ *       >
+ *         외곽선 버튼
+ *       </Button>
+ *     </div>
+ *   );
+ * }
+ * ```
+ */
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className = "", variant = "primary", size = "md", ...props }, ref) => {
+    const baseClasses =
+      "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50";
+
+    const variantClasses = {
+      primary: "bg-primary text-primary-foreground hover:bg-primary/90",
+      secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+      outline:
+        "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+    };
+
+    const sizeClasses = {
+      sm: "h-9 rounded-md px-3 text-xs",
+      md: "h-10 px-4 py-2",
+      lg: "h-11 rounded-md px-8",
+    };
+
+    return (
+      <button
+        className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+        ref={ref}
+        {...props}
+      />
+    );
+  },
+);
+
+Button.displayName = "Button";
+````
+
+**Export 구조:**
+
+```typescript
+// src/common/index.ts - 카테고리별 export
+export { Button, type ButtonProps } from "./Button/index.js";
+
+// src/index.ts - 전체 export
+export * from "./common/index.js";
+```
+
+**React UI 전용 고려사항:**
+
+- **peerDependencies**: React와 ReactDOM을 외부 의존성으로 설정
+- **React 19+ 지원**: 최신 React API와 호환성 확보
+- **forwardRef 지원**: ref 전달을 통한 DOM 조작 지원
+- **타입 안전성**: HTML 요소의 모든 속성 상속 및 확장
+- **접근성**: ARIA 속성, focus 관리, keyboard 지원
+- **스타일링**: Tailwind CSS 기반 일관된 디자인 시스템
+
+#### React 환경 요구사항
+
+**필수 React 버전:**
+
+- React 19.0.0 이상 (peerDependencies에서 강제)
+- ReactDOM 19.0.0 이상 필요
+
+**호환성 검증:**
+
+```bash
+# React 버전 확인
+npm list react react-dom
+
+# React 19+ 지원 확인
+node -e "import('react').then(r => console.log('React 버전:', r.version || 'Unknown'))"
+```
+
+#### 지원 카테고리
+
+현재 지원하는 React UI 컴포넌트 카테고리:
+
+- **`common`**: 범용 UI 컴포넌트
+  - `Button`: 다양한 variant와 size를 지원하는 버튼 컴포넌트
+
+향후 추가 예정 카테고리:
+
+- `form`: 폼 관련 컴포넌트 (Input, Select, Checkbox 등)
+- `layout`: 레이아웃 컴포넌트 (Container, Grid, Stack 등)
+- `feedback`: 피드백 컴포넌트 (Alert, Toast, Modal 등)
+- `navigation`: 네비게이션 컴포넌트 (Tab, Breadcrumb 등)
+- `data-display`: 데이터 표시 컴포넌트 (Table, Card, Badge 등)
+
+#### React UI 패키지 특화 고려사항
+
+**설계 원칙:**
+
+- **조합 가능성**: 컴포넌트들이 잘 조합될 수 있도록 설계
+- **확장성**: 스타일 커스터마이징이 용이하도록 className props 지원
+- **일관성**: 디자인 시스템에 따른 일관된 시각적 언어
+- **성능**: 불필요한 리렌더링 방지 및 번들 크기 최적화
+
+**스타일링 전략:**
+
+- **Tailwind CSS 활용**: 유틸리티 클래스 기반 스타일링
+- **CSS 변수 활용**: 테마 커스터마이징 지원
+- **조건부 클래스**: variant와 size에 따른 동적 스타일링
+- **className 병합**: 기본 스타일과 사용자 정의 스타일 병합
+
+**접근성 고려사항:**
+
+- **키보드 내비게이션**: Tab, Enter, Space 키 지원
+- **스크린 리더**: 적절한 ARIA 레이블 및 역할 설정
+- **색상 대비**: WCAG 가이드라인 준수
+- **포커스 관리**: 시각적 포커스 표시기 제공
+
+### 4. `@repo/ui` 패키지
 
 UI 컴포넌트 라이브러리에 기여할 때:
 
@@ -1876,6 +2073,46 @@ pnpm turbo build --filter=web
 ```
 
 #### 애플리케이션에서 유틸리티 패키지 사용
+
+**React UI 컴포넌트 (react-ui) 사용:**
+
+```tsx
+// React UI 컴포넌트 - 클라이언트와 서버 컴포넌트 모두에서 사용 가능
+import { Button } from "@repo/react-ui/common";
+
+// 클라이언트 컴포넌트에서 사용
+("use client");
+
+export default function InteractiveComponent() {
+  const handleClick = () => {
+    alert("버튼이 클릭되었습니다!");
+  };
+
+  return (
+    <div className="space-y-4">
+      <Button variant="primary" size="md" onClick={handleClick}>
+        기본 버튼
+      </Button>
+      <Button variant="secondary" size="lg">
+        보조 버튼
+      </Button>
+      <Button variant="outline" size="sm" disabled>
+        비활성화된 버튼
+      </Button>
+    </div>
+  );
+}
+
+// 서버 컴포넌트에서도 사용 가능 (정적 렌더링)
+export default function StaticComponent() {
+  return (
+    <div className="flex gap-2">
+      <Button variant="primary">정적 버튼</Button>
+      <Button variant="outline">외곽선 버튼</Button>
+    </div>
+  );
+}
+```
 
 **React 전용 유틸리티 (react-utils) 사용:**
 
@@ -1980,6 +2217,7 @@ export async function GET() {
 | 상황                      | 사용할 패키지         | 사용 위치                   |
 | ------------------------- | --------------------- | --------------------------- |
 | 커스텀 훅, React 유틸리티 | `@repo/react-utils`   | React 컴포넌트만            |
+| React UI 컴포넌트         | `@repo/react-ui`      | React 컴포넌트만            |
 | 문자열 검증, 배열 처리 등 | `@repo/utils-common`  | 클라이언트 + 서버           |
 | 파일 읽기, 시스템 정보 등 | `@repo/node-utils`    | 서버 컴포넌트, API 라우트만 |
 | 브라우저 API, 메모리 정보 | `@repo/browser-utils` | 클라이언트만                |
@@ -1992,6 +2230,10 @@ export async function GET() {
 // 일반 TypeScript/JavaScript 함수에서
 import { useInterval } from "@repo/react-utils/hooks"; // 에러 발생!
 
+// ❌ 잘못된 사용 - 비React 환경에서 react-ui 사용 시도
+// 일반 TypeScript/JavaScript 함수에서
+import { Button } from "@repo/react-ui/common"; // 에러 발생!
+
 // ❌ 잘못된 사용 - 클라이언트에서 node-utils 사용 시도
 ("use client"); // 클라이언트 컴포넌트에서
 import { ls } from "@repo/node-utils/fs"; // 에러 발생!
@@ -1999,6 +2241,10 @@ import { ls } from "@repo/node-utils/fs"; // 에러 발생!
 // ✅ 올바른 사용 - React 컴포넌트에서 react-utils 사용
 ("use client"); // 클라이언트 컴포넌트에서
 import { useInterval } from "@repo/react-utils/hooks"; // 정상 동작
+
+// ✅ 올바른 사용 - React 컴포넌트에서 react-ui 사용
+("use client"); // 클라이언트 컴포넌트에서
+import { Button } from "@repo/react-ui/common"; // 정상 동작
 
 // ✅ 올바른 사용 - 서버 컴포넌트에서 node-utils 사용
 // 'use client' 지시어 없음 (서버 컴포넌트)
