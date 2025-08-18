@@ -21,8 +21,7 @@ iamhoonse-ai-ecosystem/
 │   ├── docs/          # 문서 사이트 (Next.js)
 │   └── web/           # 메인 웹 애플리케이션 (Next.js)
 ├── packages/
-│   ├── ui/            # 공유 React 컴포넌트 라이브러리
-│   ├── react-ui/      # React UI 컴포넌트 라이브러리 (새로운 패키지)
+│   ├── react-ui/      # React UI 컴포넌트 라이브러리
 │   ├── react-utils/   # React 커스텀 훅 및 유틸리티 패키지 (구성 최적화 완료)
 │   ├── utils-common/  # 공통 유틸리티 함수 패키지
 │   ├── node-utils/    # Node.js 전용 유틸리티 함수 패키지
@@ -192,11 +191,6 @@ git commit -m "생성된-커밋-메시지"
 - Next.js App Router 사용
 
 ### Packages
-
-#### `@repo/ui`
-
-- 공유 React 컴포넌트 라이브러리
-- TypeScript로 작성된 재사용 가능한 UI 컴포넌트
 
 #### `@repo/react-ui`
 

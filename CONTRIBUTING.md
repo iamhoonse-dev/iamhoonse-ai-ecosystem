@@ -1991,74 +1991,6 @@ node -e "import('react').then(r => console.log('React 버전:', r.version || 'Un
 - **색상 대비**: WCAG 가이드라인 준수
 - **포커스 관리**: 시각적 포커스 표시기 제공
 
-### 4. `@repo/ui` 패키지
-
-UI 컴포넌트 라이브러리에 기여할 때:
-
-```bash
-# 개발 환경 실행
-cd packages/ui
-pnpm dev
-
-# 스토리북 실행 (있는 경우)
-pnpm storybook
-
-# 컴포넌트 테스트
-pnpm test
-```
-
-#### 새 컴포넌트 추가 체크리스트
-
-- [ ] TypeScript 인터페이스 정의
-- [ ] 접근성 속성 추가 (ARIA)
-- [ ] 다양한 variant 및 size 지원
-- [ ] 테스트 코드 작성
-- [ ] 스토리북 스토리 작성 (있는 경우)
-- [ ] 사용 예제 문서화
-
-#### 컴포넌트 예시 구조
-
-```tsx
-// src/components/new-component.tsx
-import React from "react";
-import { cn } from "../utils/cn";
-
-interface NewComponentProps {
-  variant?: "default" | "outline" | "ghost";
-  size?: "sm" | "md" | "lg";
-  className?: string;
-  children: React.ReactNode;
-}
-
-export const NewComponent: React.FC<NewComponentProps> = ({
-  variant = "default",
-  size = "md",
-  className,
-  children,
-  ...props
-}) => {
-  return (
-    <div
-      className={cn(
-        "base-styles",
-        {
-          "variant-styles": variant === "default",
-          // ... other variants
-        },
-        {
-          "size-styles": size === "md",
-          // ... other sizes
-        },
-        className,
-      )}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-};
-```
-
 ### 4. Apps (web, docs)
 
 애플리케이션에 기여할 때:
@@ -2221,7 +2153,6 @@ export async function GET() {
 | 문자열 검증, 배열 처리 등 | `@repo/utils-common`  | 클라이언트 + 서버           |
 | 파일 읽기, 시스템 정보 등 | `@repo/node-utils`    | 서버 컴포넌트, API 라우트만 |
 | 브라우저 API, 메모리 정보 | `@repo/browser-utils` | 클라이언트만                |
-| UI 컴포넌트               | `@repo/ui`            | 클라이언트 + 서버           |
 
 **주의사항:**
 
