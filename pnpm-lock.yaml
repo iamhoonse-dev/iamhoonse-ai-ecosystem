@@ -88,6 +88,9 @@ importers:
       '@repo/node-utils':
         specifier: workspace:*
         version: link:../../packages/node-utils
+      '@repo/react-ui':
+        specifier: workspace:*
+        version: link:../../packages/react-ui
       '@repo/react-utils':
         specifier: workspace:*
         version: link:../../packages/react-utils
