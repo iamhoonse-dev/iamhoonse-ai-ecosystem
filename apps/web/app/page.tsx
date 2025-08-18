@@ -1,5 +1,5 @@
 import Image, { type ImageProps } from "next/image";
-import { Button } from "@repo/ui/button";
+import { Button } from "@repo/react-ui/common";
 import { isEmptyString } from "@repo/utils-common/string";
 import { ls } from "@repo/node-utils/fs";
 import styles from "./page.module.css";
@@ -123,9 +123,7 @@ export default async function Home() {
             Read our docs
           </a>
         </div>
-        <Button appName="web" className={styles.secondary}>
-          Open alert
-        </Button>
+        <Button variant="primary">Open alert</Button>
       </main>
       <footer className={styles.footer}>
         <a

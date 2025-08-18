@@ -22,6 +22,7 @@ iamhoonse-ai-ecosystem/
 │   └── web/           # 메인 웹 애플리케이션 (Next.js)
 ├── packages/
 │   ├── ui/            # 공유 React 컴포넌트 라이브러리
+│   ├── react-ui/      # React UI 컴포넌트 라이브러리 (새로운 패키지)
 │   ├── react-utils/   # React 커스텀 훅 및 유틸리티 패키지
 │   ├── utils-common/  # 공통 유틸리티 함수 패키지
 │   ├── node-utils/    # Node.js 전용 유틸리티 함수 패키지
@@ -185,6 +186,67 @@ git commit -m "생성된-커밋-메시지"
 - 공유 React 컴포넌트 라이브러리
 - TypeScript로 작성된 재사용 가능한 UI 컴포넌트
 
+#### `@repo/react-ui`
+
+- **React 전용** UI 컴포넌트 라이브러리
+- TypeScript로 작성된 현대적인 React 컴포넌트
+- **React 19+ 환경에서만 동작** (peerDependencies 의존성)
+- Tree-shaking 지원으로 필요한 컴포넌트만 선택적 임포트
+- ESM/CJS/UMD 모듈 형식 지원
+- 카테고리별 컴포넌트 분리 (`common` 카테고리)
+- forwardRef와 같은 최신 React 패턴 적용
+
+**주요 컴포넌트:**
+
+- `Button`: 다양한 variant(primary, secondary, outline)와 size(sm, md, lg)를 지원하는 버튼 컴포넌트
+  - 접근성 고려한 설계 (focus-visible, disabled 상태 지원)
+  - Tailwind CSS 클래스 기반 스타일링
+  - HTML 기본 button 속성 완벽 지원
+  - forwardRef를 통한 ref 전달 지원
+
+**사용 예시:**
+
+```tsx
+// 카테고리별 임포트 (권장 - Tree-shaking 최적화)
+import { Button } from "@repo/react-ui/common";
+
+// 전체 임포트도 지원
+import { Button } from "@repo/react-ui";
+
+// 기본 사용
+function App() {
+  return (
+    <div>
+      <Button variant="primary" size="md">
+        기본 버튼
+      </Button>
+      <Button variant="secondary" size="lg">
+        보조 버튼
+      </Button>
+      <Button variant="outline" size="sm">
+        외곽선 버튼
+      </Button>
+    </div>
+  );
+}
+
+// ref와 이벤트 핸들러 사용
+function AdvancedApp() {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  return (
+    <Button
+      ref={buttonRef}
+      variant="primary"
+      onClick={() => alert("클릭됨!")}
+      disabled={false}
+    >
+      고급 버튼
+    </Button>
+  );
+}
+```
+
 #### `@repo/react-utils`
 
 - **React 전용** 커스텀 훅 및 유틸리티 라이브러리
@@ -203,7 +265,7 @@ git commit -m "생성된-커밋-메시지"
 
 **사용 예시:**
 
-```typescript
+```tsx
 // 카테고리별 임포트 (권장 - Tree-shaking 최적화)
 import { useInterval } from "@repo/react-utils/hooks";
 
@@ -216,15 +278,18 @@ function Timer() {
   const [isRunning, setIsRunning] = useState(true);
 
   // 1초마다 카운터 증가, isRunning이 false일 때 일시정지
-  useInterval(() => {
-    setCount(count => count + 1);
-  }, isRunning ? 1000 : null);
+  useInterval(
+    () => {
+      setCount((count) => count + 1);
+    },
+    isRunning ? 1000 : null,
+  );
 
   return (
     <div>
       <p>카운트: {count}</p>
       <button onClick={() => setIsRunning(!isRunning)}>
-        {isRunning ? '일시정지' : '재개'}
+        {isRunning ? "일시정지" : "재개"}
       </button>
     </div>
   );
@@ -304,16 +369,16 @@ entries.forEach((entry) => {
 });
 ```
 
-**유틸리티 패키지 비교:**
+**패키지 비교표:**
 
-| 특징             | utils-common        | react-utils         | node-utils          | browser-utils    |
-| ---------------- | ------------------- | ------------------- | ------------------- | ---------------- |
-| **실행 환경**    | 브라우저 + Node.js  | React 19+ 전용      | Node.js 전용        | 브라우저 전용    |
-| **React 의존성** | 없음                | React 19+ 필수      | 없음                | 없음             |
-| **Node.js 버전** | 범용                | 22+ (개발 환경)     | 22+ 필수            | N/A              |
-| **API 접근**     | Web API + 공통 기능 | React Hooks API     | Node.js 내장 모듈   | Browser API      |
-| **용도**         | 범용 유틸리티       | React 컴포넌트 전용 | 서버사이드 전용     | 클라이언트 전용  |
-| **예시 기능**    | 문자열, 배열 처리   | 커스텀 훅           | 파일시스템, OS 기능 | BOM, 메모리 정보 |
+| 특징             | utils-common        | react-utils         | react-ui             | node-utils          | browser-utils    |
+| ---------------- | ------------------- | ------------------- | -------------------- | ------------------- | ---------------- |
+| **실행 환경**    | 브라우저 + Node.js  | React 19+ 전용      | React 19+ 전용       | Node.js 전용        | 브라우저 전용    |
+| **React 의존성** | 없음                | React 19+ 필수      | React 19+ 필수       | 없음                | 없음             |
+| **Node.js 버전** | 범용                | 22+ (개발 환경)     | 22+ (개발 환경)      | 22+ 필수            | N/A              |
+| **API 접근**     | Web API + 공통 기능 | React Hooks API     | React Components API | Node.js 내장 모듈   | Browser API      |
+| **용도**         | 범용 유틸리티       | React 컴포넌트 전용 | React UI 컴포넌트    | 서버사이드 전용     | 클라이언트 전용  |
+| **예시 기능**    | 문자열, 배열 처리   | 커스텀 훅           | Button, Input 등     | 파일시스템, OS 기능 | BOM, 메모리 정보 |
 
 #### `@repo/browser-utils`
 
@@ -355,6 +420,7 @@ if (memInfo.isSupported) {
 
 - **utils-common**: 브라우저와 Node.js 모두에서 동작하는 범용 유틸리티
 - **react-utils**: React 컴포넌트에서만 사용 가능한 커스텀 훅 및 React 전용 유틸리티
+- **react-ui**: React 애플리케이션에서 사용하는 UI 컴포넌트 라이브러리 (Button, Input 등)
 - **node-utils**: Node.js 환경에서만 동작하는 서버사이드 전용 유틸리티
 - **browser-utils**: 브라우저 환경에서만 동작하는 클라이언트사이드 전용 유틸리티
 
