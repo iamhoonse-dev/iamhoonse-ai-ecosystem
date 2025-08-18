@@ -25,7 +25,8 @@ iamhoonse-ai-ecosystem/
 │   ├── react-utils/   # React 커스텀 훅 및 유틸리티 패키지 (구성 최적화 완료)
 │   ├── utils-common/  # 공통 유틸리티 함수 패키지
 │   ├── node-utils/    # Node.js 전용 유틸리티 함수 패키지
-│   ├── browser-utils/ # 브라우저 전용 유틸리티 함수 패키지
+│   └── browser-utils/ # 브라우저 전용 유틸리티 함수 패키지
+├── configs/
 │   ├── eslint-config/ # ESLint 설정 패키지
 │   └── typescript-config/ # TypeScript 설정 패키지
 └── .claude/
@@ -34,6 +35,17 @@ iamhoonse-ai-ecosystem/
 ```
 
 ## 최근 개선사항
+
+### 프로젝트 구조 개선 (2025년 1월)
+
+**설정 패키지 전용 디렉토리 신설:**
+
+- **configs 디렉토리 도입**: `eslint-config`, `typescript-config` 같은 설정 관련 패키지들을 별도의 `configs/` 디렉토리로 이동
+- **명확한 역할 분리**: 비즈니스 로직 패키지(`packages/`)와 설정 패키지(`configs/`) 간의 명확한 구분
+- **pnpm workspace 업데이트**: `pnpm-workspace.yaml`에 `configs/*` 경로 추가로 monorepo 구조 최적화
+- **ESLint 버전 안정화**: 9.33.0에서 발생한 module export 이슈를 해결하기 위해 9.32.0으로 다운그레이드
+
+이러한 구조 개선으로 프로젝트의 논리적 구성이 더욱 명확해졌고, 새로운 개발자들이 프로젝트를 이해하기 쉬워졌습니다.
 
 ### 패키지 설정 최적화 (2025년 1월)
 
@@ -310,10 +322,13 @@ function Timer() {
 }
 ```
 
+### Configs
+
 #### `@repo/eslint-config`
 
 - 프로젝트 전체에서 사용하는 ESLint 설정
 - Next.js와 Prettier 설정 포함
+- `configs/eslint-config/` 디렉토리에 위치
 
 #### `@repo/utils-common`
 
@@ -443,6 +458,7 @@ if (memInfo.isSupported) {
 #### `@repo/typescript-config`
 
 - 공유 TypeScript 설정
+- `configs/typescript-config/` 디렉토리에 위치
 - 다양한 환경별 설정 파일 제공:
   - `base.json`: 기본 TypeScript 설정 (범용 패키지용)
   - `nextjs.json`: Next.js 애플리케이션 전용 설정

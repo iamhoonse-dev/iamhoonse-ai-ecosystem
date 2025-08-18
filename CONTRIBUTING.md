@@ -136,12 +136,12 @@ iamhoonse-ai-ecosystem/
 │   ├── docs/                     # 문서 사이트 (Next.js)
 │   └── web/                      # 메인 웹 앱 (Next.js)
 ├── packages/                      # 공유 패키지들
-│   ├── ui/                       # React 컴포넌트 라이브러리
-│   ├── react-ui/                 # React UI 컴포넌트 라이브러리 (새로운 패키지)
+│   ├── react-ui/                 # React UI 컴포넌트 라이브러리
 │   ├── react-utils/              # React 커스텀 훅 및 유틸리티 라이브러리
 │   ├── utils-common/             # 공통 유틸리티 함수 라이브러리
 │   ├── node-utils/               # Node.js 전용 유틸리티 라이브러리
-│   ├── browser-utils/            # 브라우저 전용 유틸리티 라이브러리
+│   └── browser-utils/            # 브라우저 전용 유틸리티 라이브러리
+├── configs/
 │   ├── eslint-config/            # ESLint 설정
 │   └── typescript-config/        # TypeScript 설정
 ├── .claude/                       # Claude Code 설정
@@ -2195,7 +2195,9 @@ import { isEmptyString } from "@repo/utils-common/string"; // 정상 동작
 - [ ] 에러 상태 처리
 - [ ] 접근성 검사
 
-### 5. 설정 패키지 (eslint-config, typescript-config)
+### 5. 설정 패키지 (configs/eslint-config, configs/typescript-config)
+
+설정 패키지들은 `configs/` 디렉토리에 위치하며, 프로젝트 전체의 코드 품질과 개발 환경을 관리합니다.
 
 설정 패키지에 기여할 때:
 
