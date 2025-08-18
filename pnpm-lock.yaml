@@ -55,7 +55,7 @@ importers:
         specifier: 19.1.1
         version: 19.1.1(@types/react@19.1.0)
       eslint:
-        specifier: ^9.33.0
+        specifier: ^9.32.0
         version: 9.33.0(jiti@2.5.1)
       typescript:
         specifier: 5.9.2
@@ -104,7 +104,7 @@ importers:
         specifier: 19.1.1
         version: 19.1.1(@types/react@19.1.0)
       eslint:
-        specifier: ^9.33.0
+        specifier: ^9.32.0
         version: 9.33.0(jiti@2.5.1)
       typescript:
         specifier: 5.9.2
@@ -124,7 +124,7 @@ importers:
         specifier: ^22.15.3
         version: 22.15.3
       eslint:
-        specifier: ^9.33.0
+        specifier: ^9.32.0
         version: 9.33.0(jiti@2.5.1)
       tsup:
         specifier: ^8.3.5
@@ -136,13 +136,13 @@ importers:
   packages/eslint-config:
     devDependencies:
       '@eslint/js':
-        specifier: ^9.33.0
+        specifier: ^9.32.0
         version: 9.33.0
       '@next/eslint-plugin-next':
         specifier: ^15.4.2
         version: 15.4.2
       eslint:
-        specifier: ^9.33.0
+        specifier: ^9.32.0
         version: 9.33.0(jiti@2.5.1)
       eslint-config-prettier:
         specifier: ^10.1.1
@@ -181,7 +181,7 @@ importers:
         specifier: ^22.15.3
         version: 22.15.3
       eslint:
-        specifier: ^9.33.0
+        specifier: ^9.32.0
         version: 9.33.0(jiti@2.5.1)
       tsup:
         specifier: ^8.3.5
@@ -208,7 +208,7 @@ importers:
         specifier: ^19.0.0
         version: 19.1.1(@types/react@19.1.0)
       eslint:
-        specifier: ^9.33.0
+        specifier: ^9.32.0
         version: 9.33.0(jiti@2.5.1)
       react:
         specifier: ^19.0.0
@@ -241,7 +241,7 @@ importers:
         specifier: ^19.0.0
         version: 19.1.1(@types/react@19.1.0)
       eslint:
-        specifier: ^9.33.0
+        specifier: ^9.32.0
         version: 9.33.0(jiti@2.5.1)
       react:
         specifier: ^19.0.0
@@ -268,7 +268,7 @@ importers:
         specifier: ^22.15.3
         version: 22.15.3
       eslint:
-        specifier: ^9.33.0
+        specifier: ^9.32.0
         version: 9.33.0(jiti@2.5.1)
       tsup:
         specifier: ^8.3.5
