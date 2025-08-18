@@ -138,7 +138,7 @@ iamhoonse-ai-ecosystem/
 ├── packages/                      # 공유 패키지들
 │   ├── react-ui/                 # React UI 컴포넌트 라이브러리
 │   ├── react-utils/              # React 커스텀 훅 및 유틸리티 라이브러리
-│   ├── utils-common/             # 공통 유틸리티 함수 라이브러리
+│   ├── common-utils/             # 공통 유틸리티 함수 라이브러리
 │   ├── node-utils/               # Node.js 전용 유틸리티 라이브러리
 │   └── browser-utils/            # 브라우저 전용 유틸리티 라이브러리
 ├── configs/
@@ -1383,13 +1383,13 @@ git add src/components/ src/pages/ src/utils/
 
 ## 패키지별 기여 가이드
 
-### 1. `@repo/utils-common` 패키지
+### 1. `@repo/common-utils` 패키지
 
 **범용 환경 지원** 공통 유틸리티 함수 라이브러리에 기여할 때:
 
 ```bash
 # 개발 환경 실행
-cd packages/utils-common
+cd packages/common-utils
 pnpm dev
 
 # 유틸리티 함수 빌드
@@ -1433,7 +1433,7 @@ src/
  *
  * @example
  * ```typescript
- * import { isEmptyString } from '@repo/utils-common/string';
+ * import { isEmptyString } from '@repo/common-utils/string';
  *
  * isEmptyString('');          // true
  * isEmptyString('   ');       // true
@@ -1458,8 +1458,8 @@ export * from "./string/index.js";
 
 **Tree-shaking 지원:**
 
-- 카테고리별 import를 권장: `import { isEmptyString } from '@repo/utils-common/string'`
-- 전체 import도 지원: `import { isEmptyString } from '@repo/utils-common'`
+- 카테고리별 import를 권장: `import { isEmptyString } from '@repo/common-utils/string'`
+- 전체 import도 지원: `import { isEmptyString } from '@repo/common-utils'`
 - package.json의 exports 필드를 통한 명시적 진입점 설정
 
 #### 지원 카테고리
@@ -2078,11 +2078,11 @@ export default function Timer() {
 }
 ```
 
-**범용 유틸리티 (utils-common) 사용:**
+**범용 유틸리티 (common-utils) 사용:**
 
 ```typescript
 // 브라우저와 Node.js 모두에서 동작하는 유틸리티
-import { isEmptyString } from '@repo/utils-common/string';
+import { isEmptyString } from '@repo/common-utils/string';
 
 // 클라이언트/서버 공통 로직에서 사용
 export default function MyComponent() {
@@ -2150,7 +2150,7 @@ export async function GET() {
 | ------------------------- | --------------------- | --------------------------- |
 | 커스텀 훅, React 유틸리티 | `@repo/react-utils`   | React 컴포넌트만            |
 | React UI 컴포넌트         | `@repo/react-ui`      | React 컴포넌트만            |
-| 문자열 검증, 배열 처리 등 | `@repo/utils-common`  | 클라이언트 + 서버           |
+| 문자열 검증, 배열 처리 등 | `@repo/common-utils`  | 클라이언트 + 서버           |
 | 파일 읽기, 시스템 정보 등 | `@repo/node-utils`    | 서버 컴포넌트, API 라우트만 |
 | 브라우저 API, 메모리 정보 | `@repo/browser-utils` | 클라이언트만                |
 
@@ -2181,9 +2181,9 @@ import { Button } from "@repo/react-ui/common"; // 정상 동작
 // 'use client' 지시어 없음 (서버 컴포넌트)
 import { ls } from "@repo/node-utils/fs"; // 정상 동작
 
-// ✅ 올바른 사용 - 클라이언트에서 utils-common 사용
+// ✅ 올바른 사용 - 클라이언트에서 common-utils 사용
 ("use client");
-import { isEmptyString } from "@repo/utils-common/string"; // 정상 동작
+import { isEmptyString } from "@repo/common-utils/string"; // 정상 동작
 ```
 
 #### 새 페이지/기능 추가 체크리스트
