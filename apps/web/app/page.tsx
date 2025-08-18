@@ -1,6 +1,6 @@
 import Image, { type ImageProps } from "next/image";
 import { Button } from "@repo/react-ui/common";
-import { isEmptyString } from "@repo/utils-common/string";
+import { isEmptyString } from "@repo/common-utils/string";
 import { ls } from "@repo/node-utils/fs";
 import styles from "./page.module.css";
 import TestBrowserUtils from "../containers/TestBrowserUtils";
