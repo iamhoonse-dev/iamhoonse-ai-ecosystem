@@ -44,7 +44,7 @@ importers:
         version: link:../../packages/eslint-config
       '@repo/typescript-config':
         specifier: workspace:*
-        version: link:../../packages/typescript-config
+        version: link:../../configs/typescript-config
       '@types/node':
         specifier: ^22.15.3
         version: 22.15.3
@@ -90,7 +90,7 @@ importers:
         version: link:../../packages/react-utils
       '@repo/typescript-config':
         specifier: workspace:*
-        version: link:../../packages/typescript-config
+        version: link:../../configs/typescript-config
       '@repo/utils-common':
         specifier: workspace:*
         version: link:../../packages/utils-common
@@ -110,6 +110,8 @@ importers:
         specifier: 5.9.2
         version: 5.9.2
 
+  configs/typescript-config: {}
+
   packages/browser-utils:
     devDependencies:
       '@repo/eslint-config':
@@ -117,7 +119,7 @@ importers:
         version: link:../eslint-config
       '@repo/typescript-config':
         specifier: workspace:*
-        version: link:../typescript-config
+        version: link:../../configs/typescript-config
       '@types/node':
         specifier: ^22.15.3
         version: 22.15.3
@@ -174,7 +176,7 @@ importers:
         version: link:../eslint-config
       '@repo/typescript-config':
         specifier: workspace:*
-        version: link:../typescript-config
+        version: link:../../configs/typescript-config
       '@types/node':
         specifier: ^22.15.3
         version: 22.15.3
@@ -195,7 +197,7 @@ importers:
         version: link:../eslint-config
       '@repo/typescript-config':
         specifier: workspace:*
-        version: link:../typescript-config
+        version: link:../../configs/typescript-config
       '@types/node':
         specifier: ^22.15.3
         version: 22.15.3
@@ -228,7 +230,7 @@ importers:
         version: link:../eslint-config
       '@repo/typescript-config':
         specifier: workspace:*
-        version: link:../typescript-config
+        version: link:../../configs/typescript-config
       '@types/node':
         specifier: ^22.15.3
         version: 22.15.3
@@ -254,8 +256,6 @@ importers:
         specifier: 5.9.2
         version: 5.9.2
 
-  packages/typescript-config: {}
-
   packages/utils-common:
     devDependencies:
       '@repo/eslint-config':
@@ -263,7 +263,7 @@ importers:
         version: link:../eslint-config
       '@repo/typescript-config':
         specifier: workspace:*
-        version: link:../typescript-config
+        version: link:../../configs/typescript-config
       '@types/node':
         specifier: ^22.15.3
         version: 22.15.3
