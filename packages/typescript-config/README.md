@@ -33,13 +33,20 @@ Next.js 프로젝트 전용 설정입니다.
 
 ### `@repo/typescript-config/react-library.json`
 
-React 컴포넌트 라이브러리 개발용 설정입니다.
+**React 컴포넌트 라이브러리 개발용 설정**입니다.
 
 **라이브러리 특화:**
 
 - 선언 파일 생성 활성화
 - 모듈 번들링 최적화
-- React JSX 변환 설정
+- React JSX 변환 설정 (`jsx: "react-jsx"`)
+
+**현재 사용 패키지:**
+
+- `@repo/react-ui`: React UI 컴포넌트 라이브러리
+- `@repo/react-utils`: React 커스텀 훅 및 유틸리티 (2025년 1월 설정 통일 완료)
+
+이 설정을 통해 모든 React 관련 패키지들이 일관된 TypeScript 환경에서 개발됩니다.
 
 ## 사용법
 
@@ -60,10 +67,23 @@ React 컴포넌트 라이브러리 개발용 설정입니다.
 // tsconfig.json
 {
   "extends": "@repo/typescript-config/react-library.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": [
+    "dist",
+    "node_modules",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/*.test.tsx",
+    "**/*.spec.tsx"
+  ]
 }
 ```
+
+**테스트 파일 제외**: React 라이브러리에서는 `.tsx` 확장자를 포함한 모든 테스트 파일이 컴파일 대상에서 제외되어야 합니다.
 
 ### 기본 TypeScript 프로젝트에서 사용
 

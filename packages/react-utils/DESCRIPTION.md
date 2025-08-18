@@ -11,7 +11,7 @@ description: 본 문서는 AI 에게 패키지 작성을 요청하기 위한 설
 - **번들러**: tsup
 - **React 버전**: 19 이상
 - **peerDependencies**: React, ReactDOM
-  - tsup 설정에서 `external` 옵션을 사용하여 React와 ReactDOM을 외부 종속성으로 설정합니다.
+  - tsup 설정에서 `external` 옵션을 사용하여 React, ReactDOM, 그리고 `react/jsx-runtime`을 외부 종속성으로 설정합니다.
   - devDependencies 에 React, ReactDOM 을 추가합니다.
     - 개발 환경에서도 React와 ReactDOM을 사용할 수 있도록 설정합니다.
 - **트리 쉐이킹 지원**: 번들러의 트리 쉐이킹(Tree shaking)에 대응할 수 있어야 합니다.
@@ -22,6 +22,8 @@ description: 본 문서는 AI 에게 패키지 작성을 요청하기 위한 설
     - 예 : `src/hooks/useInterval/index.ts`
 - **개발자 경험**
   - **클린 코드**: 코드 품질을 높이기 위해 ESLint, Prettier 등의 도구를 사용해야 합니다.
+  - **TypeScript 설정**: `@repo/typescript-config/react-library.json`을 상속하여 React 라이브러리에 최적화된 TypeScript 설정을 사용합니다.
+  - **테스트 파일 분리**: `.tsx` 확장자를 포함한 모든 테스트 파일이 프로덕션 빌드에서 제외되도록 설정됩니다.
 
 # 기능 요구사항
 
