@@ -11,6 +11,11 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@repo/common-utils": "workspace:*",
+    "@repo/node-utils": "workspace:*",
+    "@repo/browser-utils": "workspace:*",
+    "@repo/react-utils": "workspace:*",
+    "@repo/react-ui": "workspace:*",
     "next": "^15.4.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
@@ -18,11 +23,6 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@repo/common-utils": "workspace:*",
-    "@repo/node-utils": "workspace:*",
-    "@repo/browser-utils": "workspace:*",
-    "@repo/react-utils": "workspace:*",
-    "@repo/react-ui": "workspace:*",
     "@types/node": "^22.15.3",
     "@types/react": "19.1.0",
     "@types/react-dom": "19.1.1",

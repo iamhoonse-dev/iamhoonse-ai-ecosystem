@@ -63,6 +63,21 @@ importers:
 
   apps/web:
     dependencies:
+      '@repo/browser-utils':
+        specifier: workspace:*
+        version: link:../../packages/browser-utils
+      '@repo/common-utils':
+        specifier: workspace:*
+        version: link:../../packages/common-utils
+      '@repo/node-utils':
+        specifier: workspace:*
+        version: link:../../packages/node-utils
+      '@repo/react-ui':
+        specifier: workspace:*
+        version: link:../../packages/react-ui
+      '@repo/react-utils':
+        specifier: workspace:*
+        version: link:../../packages/react-utils
       next:
         specifier: ^15.4.2
         version: 15.4.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -73,24 +88,9 @@ importers:
         specifier: ^19.1.0
         version: 19.1.0(react@19.1.0)
     devDependencies:
-      '@repo/browser-utils':
-        specifier: workspace:*
-        version: link:../../packages/browser-utils
-      '@repo/common-utils':
-        specifier: workspace:*
-        version: link:../../packages/common-utils
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../configs/eslint-config
-      '@repo/node-utils':
-        specifier: workspace:*
-        version: link:../../packages/node-utils
-      '@repo/react-ui':
-        specifier: workspace:*
-        version: link:../../packages/react-ui
-      '@repo/react-utils':
-        specifier: workspace:*
-        version: link:../../packages/react-utils
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../configs/typescript-config
