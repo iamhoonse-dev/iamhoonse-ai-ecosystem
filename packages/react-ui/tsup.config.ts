@@ -19,9 +19,13 @@ export default defineConfig([
       };
     },
   },
-  // Category-specific entry points for tree shaking
+  // Subpackage entry points for tree shaking
   {
-    entry: { common: "src/common/index.ts" },
+    entry: {
+      common: "src/common/index.ts",
+      base: "src/base/index.ts",
+      lib: "src/lib/index.ts",
+    },
     format: ["cjs", "esm"],
     dts: true,
     clean: false,

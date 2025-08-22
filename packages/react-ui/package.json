@@ -20,6 +20,16 @@
       "types": "./dist/common.d.ts",
       "import": "./dist/common.mjs",
       "require": "./dist/common.js"
+    },
+    "./base": {
+      "types": "./dist/base.d.ts",
+      "import": "./dist/base.mjs",
+      "require": "./dist/base.js"
+    },
+    "./lib": {
+      "types": "./dist/lib.d.ts",
+      "import": "./dist/lib.mjs",
+      "require": "./dist/lib.js"
     }
   },
   "files": [
