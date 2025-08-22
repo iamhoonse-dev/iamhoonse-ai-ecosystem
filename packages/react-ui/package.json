@@ -10,6 +10,7 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
+    "./styles.css": "./dist/index.css",
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
@@ -24,9 +25,14 @@
   "files": [
     "dist/**/*"
   ],
+  "sideEffects": [
+    "**/*.css"
+  ],
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
+    "build:components": "tsup",
+    "build:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
+    "dev:components": "tsup --watch",
+    "dev:styles": "tailwindcss --watch -i ./src/styles.css -o ./dist/index.css",
     "lint": "eslint . --max-warnings 0",
     "check-types": "tsc --noEmit",
     "clean": "rm -rf dist"
@@ -37,13 +43,16 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@repo/tailwind-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@tailwindcss/cli": "^4.1.5",
     "@types/node": "^22.15.3",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "eslint": "^9.32.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "tailwindcss": "^4.1.5",
     "tsup": "^8.3.5",
     "typescript": "5.9.2"
   },

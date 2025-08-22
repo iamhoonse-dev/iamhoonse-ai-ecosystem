@@ -12,7 +12,7 @@ const TestReactUtils: FC = () => {
   useInterval(() => setCount((prevState) => ++prevState), 1_000);
 
   return (
-    <p>
+    <p className="bg-orange-300">
       <span>{count}</span>
     </p>
   );
