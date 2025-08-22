@@ -28,7 +28,8 @@ iamhoonse-ai-ecosystem/
 │   └── browser-utils/ # 브라우저 전용 유틸리티 함수 패키지
 ├── configs/
 │   ├── eslint-config/ # ESLint 설정 패키지
-│   └── typescript-config/ # TypeScript 설정 패키지
+│   ├── typescript-config/ # TypeScript 설정 패키지
+│   └── tailwindcss-config/ # TailwindCSS 설정 패키지
 └── .claude/
     ├── agents/        # Claude Code AI 에이전트
     └── commands/      # Slash 커맨드 정의
@@ -36,11 +37,23 @@ iamhoonse-ai-ecosystem/
 
 ## 최근 개선사항
 
+### TailwindCSS 모노레포 통합 (2025년 1월)
+
+**통합 스타일링 시스템 구축:**
+
+- **`@repo/tailwindcss-config` 패키지 신설**: 프로젝트 전체에서 공유하는 TailwindCSS 설정 및 테마 관리
+- **React UI 패키지 스타일 빌드 시스템**: `react-ui` 패키지에서 TailwindCSS 기반 컴포넌트 스타일을 빌드하여 다른 앱에서 `@repo/react-ui/styles.css` import로 재사용
+- **Prefix 기반 스타일 격리**: UI 컴포넌트는 `ui:` prefix를 사용하여 스타일 충돌 방지
+- **Hot Module Replacement (HMR) 지원**: 개발 환경에서 스타일 변경 시 실시간 반영
+- **통합 개발 워크플로우**: `turbo dev` 명령으로 스타일 빌드와 컴포넌트 개발이 동시 실행
+
+이러한 TailwindCSS 통합으로 일관된 디자인 시스템을 유지하면서도 효율적인 스타일 관리가 가능해졌습니다.
+
 ### 프로젝트 구조 개선 (2025년 1월)
 
 **설정 패키지 전용 디렉토리 신설:**
 
-- **configs 디렉토리 도입**: `eslint-config`, `typescript-config` 같은 설정 관련 패키지들을 별도의 `configs/` 디렉토리로 이동
+- **configs 디렉토리 도입**: `eslint-config`, `typescript-config`, `tailwindcss-config` 같은 설정 관련 패키지들을 별도의 `configs/` 디렉토리로 이동
 - **명확한 역할 분리**: 비즈니스 로직 패키지(`packages/`)와 설정 패키지(`configs/`) 간의 명확한 구분
 - **pnpm workspace 업데이트**: `pnpm-workspace.yaml`에 `configs/*` 경로 추가로 monorepo 구조 최적화
 - **ESLint 버전 안정화**: 9.33.0에서 발생한 module export 이슈를 해결하기 위해 9.32.0으로 다운그레이드
@@ -209,6 +222,8 @@ git commit -m "생성된-커밋-메시지"
 - **React 전용** UI 컴포넌트 라이브러리
 - TypeScript로 작성된 현대적인 React 컴포넌트
 - **React 19+ 환경에서만 동작** (peerDependencies 의존성)
+- **TailwindCSS 통합**: `ui:` prefix를 사용한 스타일 격리 및 CSS 빌드 시스템
+- **스타일 배포**: 컴포넌트와 함께 컴파일된 CSS를 패키지에 포함하여 배포
 - Tree-shaking 지원으로 필요한 컴포넌트만 선택적 임포트
 - ESM/CJS/UMD 모듈 형식 지원
 - 카테고리별 컴포넌트 분리 (`common` 카테고리)
@@ -221,6 +236,14 @@ git commit -m "생성된-커밋-메시지"
   - Tailwind CSS 클래스 기반 스타일링
   - HTML 기본 button 속성 완벽 지원
   - forwardRef를 통한 ref 전달 지원
+
+**TailwindCSS 스타일 사용:**
+
+```tsx
+// 앱의 레이아웃 파일에서 스타일시트 import 필요
+// apps/web/app/layout.tsx
+import "@repo/react-ui/styles.css";
+```
 
 **사용 예시:**
 
@@ -454,6 +477,24 @@ if (memInfo.isSupported) {
 - **react-ui**: React 애플리케이션에서 사용하는 UI 컴포넌트 라이브러리 (Button, Input 등)
 - **node-utils**: Node.js 환경에서만 동작하는 서버사이드 전용 유틸리티
 - **browser-utils**: 브라우저 환경에서만 동작하는 클라이언트사이드 전용 유틸리티
+
+#### `@repo/tailwind-config`
+
+- 프로젝트 전체에서 공유하는 TailwindCSS 스타일 패키지
+- `configs/tailwindcss-config/` 디렉토리에 위치
+- **공유 스타일 시트**: `shared-styles.css`를 통한 일관된 디자인 토큰 제공
+- **커스텀 테마 변수**: CSS 변수로 정의된 커스텀 색상 (blue-1000, purple-1000, red-1000)
+- **PostCSS 설정**: PostCSS 구성 파일도 함께 제공
+
+**사용법:**
+
+```css
+/* 공유 스타일 import */
+@import "@repo/tailwind-config";
+
+/* 또는 직접 참조 */
+@import "@repo/tailwind-config/shared-styles.css";
+```
 
 #### `@repo/typescript-config`
 
