@@ -37,6 +37,21 @@ iamhoonse-ai-ecosystem/
 
 ## 최근 개선사항
 
+### shadcn/ui 통합 및 서브패키지 구조 개선 (2025년 1월)
+
+**React UI 패키지 아키텍처 혁신:**
+
+- **shadcn/ui 컴포넌트 시스템 통합**: 업계 표준 디자인 시스템인 shadcn/ui를 react-ui 패키지에 통합하여 고품질의 접근 가능한 UI 컴포넌트 제공
+- **멀티 엔트리 포인트 구조**: 새로운 서브패키지 시스템으로 세분화된 import 경로 지원
+  - **`@repo/react-ui/base`**: shadcn/ui 기반의 기본 컴포넌트 (ShadcnButton)
+  - **`@repo/react-ui/lib`**: 유틸리티 함수 및 헬퍼 (cn 함수 등)
+  - **`@repo/react-ui/common`**: 기존 커스텀 컴포넌트 유지 (Button)
+- **TypeScript 번들러 모드 적용**: 향상된 모듈 해석을 위한 TypeScript 컴파일러 설정 최적화
+- **트리 쉐이킹 최적화**: 서브패키지별 독립적인 빌드로 불필요한 코드 제거 최적화
+- **고급 의존성 관리**: Radix UI, Class Variance Authority, Lucide React 등 모던 React 생태계 도구들과의 통합
+
+이러한 아키텍처 개선으로 개발자들이 필요에 따라 선택적으로 컴포넌트를 사용할 수 있으며, 더 나은 번들 크기 최적화와 개발자 경험을 제공합니다.
+
 ### TailwindCSS 모노레포 통합 (2025년 1월)
 
 **통합 스타일링 시스템 구축:**
@@ -222,18 +237,40 @@ git commit -m "생성된-커밋-메시지"
 - **React 전용** UI 컴포넌트 라이브러리
 - TypeScript로 작성된 현대적인 React 컴포넌트
 - **React 19+ 환경에서만 동작** (peerDependencies 의존성)
+- **shadcn/ui 통합**: 업계 표준 디자인 시스템 기반의 고품질 컴포넌트 제공
+- **멀티 엔트리 포인트 시스템**: 세분화된 import 경로로 최적화된 번들 크기
 - **TailwindCSS 통합**: `ui:` prefix를 사용한 스타일 격리 및 CSS 빌드 시스템
 - **스타일 배포**: 컴포넌트와 함께 컴파일된 CSS를 패키지에 포함하여 배포
 - Tree-shaking 지원으로 필요한 컴포넌트만 선택적 임포트
 - ESM/CJS/UMD 모듈 형식 지원
-- 카테고리별 컴포넌트 분리 (`common` 카테고리)
 - forwardRef와 같은 최신 React 패턴 적용
+
+**서브패키지 구조:**
+
+1. **`@repo/react-ui/base`**: shadcn/ui 기반 컴포넌트
+   - `ShadcnButton`: shadcn/ui Button 컴포넌트
+   - `buttonVariants`: Class Variance Authority 기반 스타일 variants
+   - Radix UI 기반의 접근성 최적화 컴포넌트들
+
+2. **`@repo/react-ui/lib`**: 유틸리티 함수 및 헬퍼
+   - `cn`: clsx와 tailwind-merge를 결합한 클래스명 유틸리티 함수
+   - 각종 헬퍼 함수들
+
+3. **`@repo/react-ui/common`**: 커스텀 컴포넌트
+   - `Button`: 기존 커스텀 Button 컴포넌트 (하위 호환성 유지)
 
 **주요 컴포넌트:**
 
-- `Button`: 다양한 variant(primary, secondary, outline)와 size(sm, md, lg)를 지원하는 버튼 컴포넌트
-  - 접근성 고려한 설계 (focus-visible, disabled 상태 지원)
-  - Tailwind CSS 클래스 기반 스타일링
+- **ShadcnButton**: shadcn/ui 기반 버튼 컴포넌트
+  - Class Variance Authority를 활용한 타입 안전한 variant 시스템
+  - 8가지 variant 지원 (default, destructive, outline, secondary, ghost, link)
+  - 4가지 size 지원 (default, sm, lg, icon)
+  - Radix UI Slot 기반의 asChild 패턴 지원
+  - 완전한 접근성 지원 (focus-visible, aria-invalid 등)
+  - `ui:` prefix를 통한 스타일 격리
+
+- **Button**: 기존 커스텀 버튼 컴포넌트 (하위 호환성 유지)
+  - 다양한 variant(primary, secondary, outline)와 size(sm, md, lg) 지원
   - HTML 기본 button 속성 완벽 지원
   - forwardRef를 통한 ref 전달 지원
 
@@ -248,41 +285,62 @@ import "@repo/react-ui/styles.css";
 **사용 예시:**
 
 ```tsx
-// 카테고리별 임포트 (권장 - Tree-shaking 최적화)
+// 서브패키지별 임포트 (권장 - 최적화된 Tree-shaking)
+import { ShadcnButton, buttonVariants } from "@repo/react-ui/base";
+import { cn } from "@repo/react-ui/lib";
 import { Button } from "@repo/react-ui/common";
 
 // 전체 임포트도 지원
-import { Button } from "@repo/react-ui";
+import { ShadcnButton, Button, cn } from "@repo/react-ui";
 
-// 기본 사용
-function App() {
+// shadcn/ui 기반 버튼 사용 (권장)
+function ModernApp() {
   return (
     <div>
-      <Button variant="primary" size="md">
+      <ShadcnButton variant="default" size="default">
         기본 버튼
-      </Button>
-      <Button variant="secondary" size="lg">
-        보조 버튼
-      </Button>
-      <Button variant="outline" size="sm">
+      </ShadcnButton>
+      <ShadcnButton variant="destructive" size="lg">
+        위험 버튼
+      </ShadcnButton>
+      <ShadcnButton variant="outline" size="sm">
         외곽선 버튼
-      </Button>
+      </ShadcnButton>
+      <ShadcnButton variant="ghost" size="icon">
+        <Icon />
+      </ShadcnButton>
     </div>
   );
 }
 
-// ref와 이벤트 핸들러 사용
-function AdvancedApp() {
-  const buttonRef = useRef<HTMLButtonElement>(null);
-
+// asChild 패턴으로 다른 컴포넌트로 렌더링
+function AsChildExample() {
   return (
-    <Button
-      ref={buttonRef}
-      variant="primary"
-      onClick={() => alert("클릭됨!")}
-      disabled={false}
+    <ShadcnButton variant="link" asChild>
+      <a href="/about">링크로 렌더링</a>
+    </ShadcnButton>
+  );
+}
+
+// 유틸리티 함수 사용
+function UtilityExample() {
+  return (
+    <ShadcnButton
+      className={cn(
+        buttonVariants({ variant: "default" }),
+        "additional-custom-class",
+      )}
     >
-      고급 버튼
+      커스텀 스타일 버튼
+    </ShadcnButton>
+  );
+}
+
+// 기존 Button 컴포넌트 (하위 호환성)
+function LegacyApp() {
+  return (
+    <Button variant="primary" size="md">
+      기존 버튼
     </Button>
   );
 }
@@ -423,16 +481,18 @@ entries.forEach((entry) => {
 
 **패키지 비교표:**
 
-| 특징                | common-utils        | react-utils            | react-ui               | node-utils          | browser-utils    |
-| ------------------- | ------------------- | ---------------------- | ---------------------- | ------------------- | ---------------- |
-| **실행 환경**       | 브라우저 + Node.js  | React 19+ 전용         | React 19+ 전용         | Node.js 전용        | 브라우저 전용    |
-| **React 의존성**    | 없음                | React 19+ 필수         | React 19+ 필수         | 없음                | 없음             |
-| **Node.js 버전**    | 범용                | 22+ (개발 환경)        | 22+ (개발 환경)        | 22+ 필수            | N/A              |
-| **TypeScript 설정** | base.json           | **react-library.json** | **react-library.json** | base.json           | base.json        |
-| **JSX 런타임**      | N/A                 | **react-jsx 완전지원** | **react-jsx 완전지원** | N/A                 | N/A              |
-| **API 접근**        | Web API + 공통 기능 | React Hooks API        | React Components API   | Node.js 내장 모듈   | Browser API      |
-| **용도**            | 범용 유틸리티       | React 컴포넌트 전용    | React UI 컴포넌트      | 서버사이드 전용     | 클라이언트 전용  |
-| **예시 기능**       | 문자열, 배열 처리   | 커스텀 훅              | Button, Input 등       | 파일시스템, OS 기능 | BOM, 메모리 정보 |
+| 특징                | common-utils        | react-utils            | react-ui                 | node-utils          | browser-utils    |
+| ------------------- | ------------------- | ---------------------- | ------------------------ | ------------------- | ---------------- |
+| **실행 환경**       | 브라우저, Node.js   | React 19+ 전용         | React 19+ 전용           | Node.js 전용        | 브라우저 전용    |
+| **React 의존성**    | 없음                | React 19+ 필수         | React 19+ 필수           | 없음                | 없음             |
+| **Node.js 버전**    | 범용                | 22+ (개발 환경)        | 22+ (개발 환경)          | 22+ 필수            | N/A              |
+| **TypeScript 설정** | base.json           | **react-library.json** | **react-library.json**   | base.json           | base.json        |
+| **JSX 런타임**      | N/A                 | **react-jsx 완전지원** | **react-jsx 완전지원**   | N/A                 | N/A              |
+| **API 접근**        | Web API + 공통 기능 | React Hooks API        | React Components API     | Node.js 내장 모듈   | Browser API      |
+| **디자인 시스템**   | N/A                 | N/A                    | **shadcn/ui 통합**       | N/A                 | N/A              |
+| **서브패키지**      | string              | hooks                  | **base, lib, common**    | fs                  | bom              |
+| **용도**            | 범용 유틸리티       | React 컴포넌트 전용    | React UI 컴포넌트        | 서버사이드 전용     | 클라이언트 전용  |
+| **예시 기능**       | 문자열, 배열 처리   | 커스텀 훅              | **shadcn Button + 유틸** | 파일시스템, OS 기능 | BOM, 메모리 정보 |
 
 #### `@repo/browser-utils`
 
@@ -474,9 +534,31 @@ if (memInfo.isSupported) {
 
 - **common-utils**: 브라우저와 Node.js 모두에서 동작하는 범용 유틸리티
 - **react-utils**: React 컴포넌트에서만 사용 가능한 커스텀 훅 및 React 전용 유틸리티
-- **react-ui**: React 애플리케이션에서 사용하는 UI 컴포넌트 라이브러리 (Button, Input 등)
+- **react-ui**: React 애플리케이션에서 사용하는 UI 컴포넌트 라이브러리 (shadcn/ui 기반 컴포넌트 + 커스텀 컴포넌트)
 - **node-utils**: Node.js 환경에서만 동작하는 서버사이드 전용 유틸리티
 - **browser-utils**: 브라우저 환경에서만 동작하는 클라이언트사이드 전용 유틸리티
+
+**react-ui 패키지 의존성:**
+
+```json
+{
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.2.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.541.0",
+    "tailwind-merge": "^3.3.1",
+    "tw-animate-css": "^1.3.7"
+  }
+}
+```
+
+- **@radix-ui/react-slot**: Radix UI의 Slot 컴포넌트로 asChild 패턴 구현
+- **class-variance-authority**: 타입 안전한 CSS 클래스 variant 시스템
+- **clsx**: 조건부 클래스명 결합
+- **lucide-react**: 아이콘 컴포넌트 라이브러리
+- **tailwind-merge**: TailwindCSS 클래스명 충돌 해결
+- **tw-animate-css**: TailwindCSS 애니메이션 확장
 
 #### `@repo/tailwind-config`
 

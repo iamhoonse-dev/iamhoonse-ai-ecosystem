@@ -1,5 +1,7 @@
 import Image, { type ImageProps } from "next/image";
 import { Button } from "@repo/react-ui/common";
+import { ShadcnButton } from "@repo/react-ui/base";
+import { cn } from "@repo/react-ui/lib";
 import { isEmptyString } from "@repo/common-utils/string";
 import { ls } from "@repo/node-utils/fs";
 import styles from "./page.module.css";
@@ -124,6 +126,9 @@ export default async function Home() {
           </a>
         </div>
         <Button variant="primary">Open alert</Button>
+        <ShadcnButton className={cn("bg-blue-400", "text-2xl")}>
+          Shadcn Button
+        </ShadcnButton>
       </main>
       <footer className={styles.footer}>
         <a
