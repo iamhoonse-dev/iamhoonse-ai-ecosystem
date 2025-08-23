@@ -19,6 +19,7 @@
 iamhoonse-ai-ecosystem/
 ├── apps/
 │   ├── docs/          # 문서 사이트 (Next.js)
+│   ├── storybook/     # UI 컴포넌트 스토리북 (Storybook 9.1.3 + Vite)
 │   └── web/           # 메인 웹 애플리케이션 (Next.js)
 ├── packages/
 │   ├── react-ui/      # React UI 컴포넌트 라이브러리
@@ -145,6 +146,7 @@ pnpm dev
 # 특정 앱만 실행
 pnpm turbo dev --filter=web
 pnpm turbo dev --filter=docs
+pnpm turbo dev --filter=storybook  # Storybook 개발 서버 (포트 6006)
 ```
 
 ### 빌드
@@ -155,6 +157,7 @@ pnpm build
 
 # 특정 패키지 빌드
 pnpm turbo build --filter=web
+pnpm turbo build --filter=storybook
 ```
 
 ## 개발 워크플로우
@@ -188,6 +191,24 @@ Git Hook Scripts가 설정되어 있어 커밋 시 자동으로 다음 검사가
 - 커밋 메시지 규약 검사 (Conventional Commits)
 
 검사에 실패하면 커밋이 거부되므로 사전에 `pnpm lint:fix`와 `pnpm format:fix`로 문제를 해결하세요.
+
+### UI 컴포넌트 개발
+
+**Storybook을 통한 컴포넌트 개발:**
+
+```bash
+# Storybook 개발 서버 실행 (포트 6006)
+pnpm turbo dev --filter=storybook
+
+# 또는 Storybook 앱 디렉토리에서
+cd apps/storybook
+pnpm dev
+```
+
+- **react-ui 패키지 컴포넌트 스토리**: `packages/react-ui/src/` 하위의 모든 `.stories.tsx` 파일들이 자동으로 로드됩니다
+- **실시간 개발**: 컴포넌트 변경사항이 Storybook에서 즉시 반영됩니다
+- **shadcn/ui 컴포넌트**: `@repo/react-ui/base` 경로의 shadcn/ui 기반 컴포넌트들을 확인할 수 있습니다
+- **커스텀 컴포넌트**: `@repo/react-ui/common` 경로의 기존 커스텀 컴포넌트들도 함께 제공됩니다
 
 ### Claude Code 활용
 
@@ -224,6 +245,19 @@ git commit -m "생성된-커밋-메시지"
 
 - Next.js 기반 문서 사이트
 - 프로젝트 문서화 및 API 레퍼런스 제공
+
+#### `storybook`
+
+- **Storybook 9.1.3** 기반 UI 컴포넌트 개발 환경
+- **@repo/react-ui 패키지 통합**: `packages/react-ui/src/` 하위의 모든 스토리 파일들을 자동으로 렌더링
+- **Vite 번들러 사용**: 빠른 개발 서버와 Hot Module Replacement 지원
+- **다양한 애드온 지원**:
+  - `@storybook/addon-docs`: 자동 문서 생성
+  - `@storybook/addon-a11y`: 접근성 검사
+  - `@storybook/addon-vitest`: Vitest 기반 테스팅
+- **Path Alias 설정**: `@` 별칭이 `packages/react-ui/src`를 가리켜 내부 import 해결
+- **개발 서버**: `pnpm turbo dev --filter=storybook` 명령으로 포트 6006에서 실행
+- **프로덕션 빌드**: `pnpm turbo build --filter=storybook` 명령으로 정적 사이트 빌드
 
 #### `web`
 
