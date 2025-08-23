@@ -1,4 +1,5 @@
 import type { StorybookConfig } from "@storybook/react-vite";
+import { mergeConfig } from "vite";
 
 import { join, dirname } from "path";
 
@@ -9,8 +10,13 @@ import { join, dirname } from "path";
 function getAbsolutePath(value: string) {
   return dirname(require.resolve(join(value, "package.json")));
 }
+
 const config: StorybookConfig = {
-  stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
+  stories: [
+    "../src/**/*.mdx",
+    "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+    "../../../packages/react-ui/src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+  ],
   addons: [
     getAbsolutePath("@chromatic-com/storybook"),
     getAbsolutePath("@storybook/addon-docs"),
@@ -21,6 +27,16 @@ const config: StorybookConfig = {
   framework: {
     name: getAbsolutePath("@storybook/react-vite"),
     options: {},
+  },
+  viteFinal: async (config) => {
+    return mergeConfig(config, {
+      resolve: {
+        alias: {
+          // Configure the @ alias to point to react-ui package src directory
+          "@": join(__dirname, "../../../packages/react-ui/src"),
+        },
+      },
+    });
   },
 };
 export default config;
